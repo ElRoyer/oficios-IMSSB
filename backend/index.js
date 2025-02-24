@@ -10,7 +10,8 @@ const app = express();
 const upload = multer({ dest: 'uploads/' });
 
 // Configura Firebase
-const serviceAccount = require('./credentials-firebase.json'); // Archivo de Firebase
+const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -108,9 +109,10 @@ app.get('/oficios', async (req, res) => {
     snapshot.forEach((doc) => {
       oficios.push({ id: doc.id, ...doc.data() });
     });
+    console.log('Oficios obtenidos:', oficios); // Mensaje de depuración
     res.status(200).json(oficios);
   } catch (error) {
-    console.error(error);
+    console.error('Error al obtener los oficios:', error); // Mensaje de depuración
     res.status(500).json({ error: 'Error al obtener los oficios' });
   }
 });

@@ -6,7 +6,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   const password = document.getElementById('loginPassword').value;
 
   try {
-    const response = await fetch('http://localhost:3000/login', {
+    const response = await fetch('https://oficios-imssb.onrender.com', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
