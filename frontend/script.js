@@ -29,3 +29,30 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     document.getElementById('message').textContent = 'Error al iniciar sesión';
   }
 });
+
+//Subir archivos
+document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const fileInput = document.getElementById('fileInput');
+  if (fileInput.files.length === 0) {
+    alert("Selecciona un archivo");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
+
+  try {
+    const response = await fetch(`${backendUrl}/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    document.getElementById("uploadMessage").textContent = result.message || result.error;
+  } catch (error) {
+    console.error(error);
+    document.getElementById("uploadMessage").textContent = "Error al subir el archivo";
+  }
+});

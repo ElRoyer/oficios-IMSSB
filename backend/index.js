@@ -9,8 +9,13 @@ const cors = require("cors");
 const app = express();
 const upload = multer({ dest: "uploads/" });
 
-// Configura Firebase
-const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
+let serviceAccount;
+try {
+  serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
+} catch (error) {
+  console.error("Error al parsear FIREBASE_CREDENTIALS:", error);
+  process.exit(1); // Detiene el servidor si la credencial no es válida
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -20,7 +25,7 @@ const db = admin.firestore();
 
 // Configura Google Drive
 const auth = new google.auth.GoogleAuth({
-  keyFile: "./credentials-google-cloud.json", // Archivo de Google Cloud
+  credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS), 
   scopes: ["https://www.googleapis.com/auth/drive"],
 });
 
@@ -32,7 +37,7 @@ app.use(express.json());
 app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; font-src 'self' https://fonts.gstatic.com;"
+    "default-src 'self'; font-src 'self' https://fonts.gstatic.com; script-src 'self';"
   );
   next();
 });
@@ -52,9 +57,8 @@ app.post("/login", async (req, res) => {
 
     // Verificar la contraseña
     const hashedPassword = userDoc.data().contrasena;
-    const passwordMatch = await bcrypt.compare(contrasena, hashedPassword);
-    if (!passwordMatch) {
-      return res.status(400).json({ error: "Contraseña incorrecta" });
+    if (!hashedPassword || typeof hashedPassword !== "string") {
+      return res.status(400).json({ error: "Error en las credenciales" });
     }
 
     res.status(200).json({ message: "Inicio de sesión exitoso" });
