@@ -1,58 +1,28 @@
-// Iniciar sesión
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const usuario = document.getElementById('loginUsuario').value;
-  const contrasena = document.getElementById('loginContrasena').value;
-
-  const backendUrl = 'https://oficios-imssb.onrender.com';
-
-  try {
-    const response = await fetch(`${backendUrl}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ usuario, contrasena }),
-    });
-
-    const result = await response.json();
-    if (response.ok) {
-      document.getElementById('message').textContent = result.message;
-      // Redirigir a la página principal después del login
-      window.location.href = 'main.html'; // Cambia "main.html" por tu página principal
-    } else {
-      document.getElementById('message').textContent = result.error;
+document.getElementById("loginForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+  
+    const usuario = document.getElementById("usuario").value;
+    const contrasenia = document.getElementById("contrasenia").value;
+    const errorMensaje = document.getElementById("errorMensaje");
+  
+    try {
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usuario, contrasenia }),
+      });
+  
+      const data = await response.json();
+      console.log("Respuesta del servidor:", data);
+  
+      if (response.ok) {
+        window.location.href = "main.html"; // Redirigir si el login es exitoso
+      } else {
+        errorMensaje.textContent = data.error;
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      errorMensaje.textContent = "Error al conectar con el servidor";
     }
-  } catch (error) {
-    console.error(error);
-    document.getElementById('message').textContent = 'Error al iniciar sesión';
-  }
-});
-
-//Subir archivos
-document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const fileInput = document.getElementById('fileInput');
-  if (fileInput.files.length === 0) {
-    alert("Selecciona un archivo");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("file", fileInput.files[0]);
-
-  try {
-    const response = await fetch(`${backendUrl}/upload`, {
-      method: "POST",
-      body: formData,
-    });
-
-    const result = await response.json();
-    document.getElementById("uploadMessage").textContent = result.message || result.error;
-  } catch (error) {
-    console.error(error);
-    document.getElementById("uploadMessage").textContent = "Error al subir el archivo";
-  }
-});
+  });
+  
