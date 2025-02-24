@@ -1,26 +1,62 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iniciar Sesión</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="container">
-    <h1>Iniciar Sesión</h1>
+// Iniciar sesión
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    <!-- Formulario de Login -->
-    <form id="loginForm">
-      <input type="text" id="loginUsuario" placeholder="Usuario" required>
-      <input type="password" id="loginContrasena" placeholder="Contraseña" required>
-      <button type="submit">Iniciar Sesión</button>
-    </form>
+  const usuario = document.getElementById('loginUsuario').value;
+  const contrasena = document.getElementById('loginContrasena').value;
 
-    <!-- Mensaje de Estado -->
-    <p id="message"></p>
-  </div>
+  const backendUrl = 'https://oficios-imssb.onrender.com';
 
-  <script src="script.js"></script>
-</body>
-</html>
+  try {
+    const response = await fetch(`${backendUrl}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ usuario, contrasena }),
+    });
+
+    console.log('Respuesta del servidor:',response); // Verifica si la respuesta está llegando correctamente
+
+   
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error en la respuesta:', errorData);
+      throw new Error(errorData.error || 'Error al iniciar sesión');
+    }
+
+    const result = await response.json();
+    document.getElementById('message').textContent = result.message;
+    window.location.href = './main.html'; // Redirigir a la página principal
+  } catch (error) {
+    console.error('Error en la solicitud:', error);
+    document.getElementById('message').textContent = error.message || 'Error al iniciar sesión';
+  }
+});
+
+//Subir archivos
+document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const fileInput = document.getElementById('fileInput');
+  if (fileInput.files.length === 0) {
+    alert("Selecciona un archivo");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
+
+  try {
+    const response = await fetch(`${backendUrl}/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    document.getElementById("uploadMessage").textContent = result.message || result.error;
+  } catch (error) {
+    console.error(error);
+    document.getElementById("uploadMessage").textContent = "Error al subir el archivo";
+  }
+});
