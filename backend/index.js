@@ -10,8 +10,8 @@ const upload = multer({ dest: "uploads/" });
 
 let serviceAccount;
 try {
-  console.log("FIREBASE_CREDENTIALS:", process.env.FIREBASE_CREDENTIALS);
-  serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS.replace(/\\n/g, '\n'));
+  //console.log("FIREBASE_CREDENTIALS:", process.env.FIREBASE_CREDENTIALS);
+  serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
 } catch (error) {
   console.error("Error al parsear FIREBASE_CREDENTIALS:", error);
   process.exit(1); // Detiene el servidor si la credencial no es válida
@@ -27,8 +27,8 @@ const db = admin.firestore();
 let googleCrendentials;
 
 try {
-  console.log("GOOGLE_CREDENTIALS", process.env.GOOGLE_CREDENTIALS);
-  googleCrendentials = JSON.parse(process.env.GOOGLE_CREDENTIALS.replace(/\\n/g, '\n'));
+  //console.log("GOOGLE_CREDENTIALS", process.env.GOOGLE_CREDENTIALS);
+  googleCrendentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
   const auth = new google.auth.GoogleAuth({
     credentials: googleCrendentials,
     scopes: ["https://www.googleapis.com/auth/drive"],
