@@ -3,7 +3,6 @@ const multer = require("multer");
 const { google } = require("googleapis");
 const fs = require("fs");
 const admin = require("firebase-admin");
-const bcrypt = require("bcrypt");
 const cors = require("cors");
 
 const app = express();
@@ -11,7 +10,7 @@ const upload = multer({ dest: "uploads/" });
 
 let serviceAccount;
 try {
-  serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
+  serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS.replace(/\\n/g, '\n'));
 } catch (error) {
   console.error("Error al parsear FIREBASE_CREDENTIALS:", error);
   process.exit(1); // Detiene el servidor si la credencial no es válida
@@ -24,10 +23,18 @@ admin.initializeApp({
 const db = admin.firestore();
 
 // Configura Google Drive
-const auth = new google.auth.GoogleAuth({
-  credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS), 
-  scopes: ["https://www.googleapis.com/auth/drive"],
-});
+let googleCrendentials;
+
+try {
+  googleCrendentials = JSON.parse(process.env.GOOGLE_CREDENTIALS.replace(/\\n/g, '\n'));
+  const auth = new google.auth.GoogleAuth({
+    credentials: googleCrendentials,
+    scopes: ["https://www.googleapis.com/auth/drive"],
+  });
+} catch (error) {
+  console.error("Error al configurar las credenciales de Google:", error);
+  process.exit(1);
+}
 
 const drive = google.drive({ version: "v3", auth });
 
@@ -41,7 +48,7 @@ app.use((req, res, next) => {
   );
   next();
 });
-app.use(express.static('frontend')); // Sirve archivos estáticos desde la carpeta "frontend"
+app.use(express.static("frontend")); // Sirve archivos estáticos desde la carpeta "frontend"
 
 // Ruta para iniciar sesión
 app.post("/login", async (req, res) => {
