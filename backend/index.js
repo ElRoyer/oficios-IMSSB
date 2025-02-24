@@ -10,6 +10,7 @@ const upload = multer({ dest: "uploads/" });
 
 let serviceAccount;
 try {
+  console.log("FIREBASE_CREDENTIALS:", process.env.FIREBASE_CREDENTIALS);
   serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS.replace(/\\n/g, '\n'));
 } catch (error) {
   console.error("Error al parsear FIREBASE_CREDENTIALS:", error);
@@ -26,6 +27,7 @@ const db = admin.firestore();
 let googleCrendentials;
 
 try {
+  console.log("GOOGLE_CREDENTIALS", process.env.GOOGLE_CREDENTIALS);
   googleCrendentials = JSON.parse(process.env.GOOGLE_CREDENTIALS.replace(/\\n/g, '\n'));
   const auth = new google.auth.GoogleAuth({
     credentials: googleCrendentials,
