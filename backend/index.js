@@ -33,18 +33,18 @@ app.use(express.json());
 // Ruta para iniciar sesión
 app.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { usuario, contrasena } = req.body;
 
     // Obtener el usuario de Firestore
-    const userRef = db.collection('users').doc(username);
+    const userRef = db.collection('usuarios').doc(usuario);
     const userDoc = await userRef.get();
     if (!userDoc.exists) {
       return res.status(400).json({ error: 'Usuario no encontrado' });
     }
 
     // Verificar la contraseña
-    const hashedPassword = userDoc.data().password;
-    const passwordMatch = await bcrypt.compare(password, hashedPassword);
+    const hashedPassword = userDoc.data().contrasena;
+    const passwordMatch = await bcrypt.compare(contrasena, hashedPassword);
     if (!passwordMatch) {
       return res.status(400).json({ error: 'Contraseña incorrecta' });
     }

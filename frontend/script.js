@@ -2,16 +2,18 @@
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const username = document.getElementById('loginUsername').value;
-  const password = document.getElementById('loginPassword').value;
+  const usuario = document.getElementById('loginUsuario').value;
+  const contrasena = document.getElementById('loginContrasena').value;
+
+  const backendUrl = 'https://oficios-imssb.onrender.com';
 
   try {
-    const response = await fetch('https://oficios-imssb.onrender.com', {
+    const response = await fetch(`${backendUrl}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ usuario, contrasena }),
     });
 
     const result = await response.json();
