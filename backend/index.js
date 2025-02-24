@@ -1,13 +1,13 @@
-const express = require('express');
-const multer = require('multer');
-const { google } = require('googleapis');
-const fs = require('fs');
-const admin = require('firebase-admin');
-const bcrypt = require('bcrypt');
-const cors = require('cors');
+const express = require("express");
+const multer = require("multer");
+const { google } = require("googleapis");
+const fs = require("fs");
+const admin = require("firebase-admin");
+const bcrypt = require("bcrypt");
+const cors = require("cors");
 
 const app = express();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: "uploads/" });
 
 // Configura Firebase
 const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
@@ -20,51 +20,59 @@ const db = admin.firestore();
 
 // Configura Google Drive
 const auth = new google.auth.GoogleAuth({
-  keyFile: './credentials-google-cloud.json', // Archivo de Google Cloud
-  scopes: ['https://www.googleapis.com/auth/drive'],
+  keyFile: "./credentials-google-cloud.json", // Archivo de Google Cloud
+  scopes: ["https://www.googleapis.com/auth/drive"],
 });
 
-const drive = google.drive({ version: 'v3', auth });
+const drive = google.drive({ version: "v3", auth });
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; font-src 'self' https://fonts.gstatic.com;"
+  );
+  next();
+});
+app.use(express.static('frontend')); // Sirve archivos estáticos desde la carpeta "frontend"
 
 // Ruta para iniciar sesión
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     const { usuario, contrasena } = req.body;
 
     // Obtener el usuario de Firestore
-    const userRef = db.collection('usuarios').doc(usuario);
+    const userRef = db.collection("usuarios").doc(usuario);
     const userDoc = await userRef.get();
     if (!userDoc.exists) {
-      return res.status(400).json({ error: 'Usuario no encontrado' });
+      return res.status(400).json({ error: "Usuario no encontrado" });
     }
 
     // Verificar la contraseña
     const hashedPassword = userDoc.data().contrasena;
     const passwordMatch = await bcrypt.compare(contrasena, hashedPassword);
     if (!passwordMatch) {
-      return res.status(400).json({ error: 'Contraseña incorrecta' });
+      return res.status(400).json({ error: "Contraseña incorrecta" });
     }
 
-    res.status(200).json({ message: 'Inicio de sesión exitoso' });
+    res.status(200).json({ message: "Inicio de sesión exitoso" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al iniciar sesión' });
+    res.status(500).json({ error: "Error al iniciar sesión" });
   }
 });
 
 // Ruta para subir archivos
-app.post('/upload', upload.single('file'), async (req, res) => {
+app.post("/upload", upload.single("file"), async (req, res) => {
   try {
     const { folio, asunto, remitente, destinatario, estatus } = req.body;
 
     // Subir el archivo a Google Drive
     const fileMetadata = {
       name: req.file.originalname,
-      parents: ['1oDpS4cpd3cztUqHcjdUStP3_rtKWCYZT'], // Reemplaza con el ID de tu carpeta en Drive
+      parents: ["1oDpS4cpd3cztUqHcjdUStP3_rtKWCYZT"], // Reemplaza con el ID de tu carpeta en Drive
     };
 
     const media = {
@@ -75,13 +83,13 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     const response = await drive.files.create({
       resource: fileMetadata,
       media: media,
-      fields: 'id, webViewLink',
+      fields: "id, webViewLink",
     });
 
     const fileUrl = response.data.webViewLink;
 
     // Guardar la información en Firestore
-    await db.collection('oficios').add({
+    await db.collection("oficios").add({
       folio,
       asunto,
       remitente,
@@ -94,26 +102,26 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     // Eliminar el archivo temporal
     fs.unlinkSync(req.file.path);
 
-    res.status(200).json({ message: 'Archivo subido correctamente', fileUrl });
+    res.status(200).json({ message: "Archivo subido correctamente", fileUrl });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al subir el archivo' });
+    res.status(500).json({ error: "Error al subir el archivo" });
   }
 });
 
 // Ruta para obtener todos los oficios
-app.get('/oficios', async (req, res) => {
+app.get("/oficios", async (req, res) => {
   try {
-    const snapshot = await db.collection('oficios').get();
+    const snapshot = await db.collection("oficios").get();
     const oficios = [];
     snapshot.forEach((doc) => {
       oficios.push({ id: doc.id, ...doc.data() });
     });
-    console.log('Oficios obtenidos:', oficios); // Mensaje de depuración
+    console.log("Oficios obtenidos:", oficios); // Mensaje de depuración
     res.status(200).json(oficios);
   } catch (error) {
-    console.error('Error al obtener los oficios:', error); // Mensaje de depuración
-    res.status(500).json({ error: 'Error al obtener los oficios' });
+    console.error("Error al obtener los oficios:", error); // Mensaje de depuración
+    res.status(500).json({ error: "Error al obtener los oficios" });
   }
 });
 
