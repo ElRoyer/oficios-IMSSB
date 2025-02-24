@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 
 const app = express();
-const upload = multer({ dest: 'uploads/' }); // Carpeta temporal para archivos subidos
+const upload = multer({ dest: 'uploads/' });
 
 // Configura Firebase
 const serviceAccount = require('./credentials-firebase.json'); // Archivo de Firebase
@@ -28,34 +28,6 @@ const drive = google.drive({ version: 'v3', auth });
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Ruta para registrar un nuevo usuario
-app.post('/register', async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    // Verificar si el usuario ya existe
-    const userRef = db.collection('users').doc(username);
-    const userDoc = await userRef.get();
-    if (userDoc.exists) {
-      return res.status(400).json({ error: 'El usuario ya existe' });
-    }
-
-    // Encriptar la contraseña
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Guardar el usuario en Firestore
-    await userRef.set({
-      username,
-      password: hashedPassword,
-    });
-
-    res.status(200).json({ message: 'Usuario registrado correctamente' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al registrar el usuario' });
-  }
-});
 
 // Ruta para iniciar sesión
 app.post('/login', async (req, res) => {

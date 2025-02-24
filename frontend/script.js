@@ -1,27 +1,3 @@
-// Registrar un nuevo usuario
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const username = document.getElementById('registerUsername').value;
-  const password = document.getElementById('registerPassword').value;
-
-  try {
-    const response = await fetch('http://localhost:3000/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, password }),
-    });
-
-    const result = await response.json();
-    document.getElementById('message').textContent = result.message || result.error;
-  } catch (error) {
-    console.error(error);
-    document.getElementById('message').textContent = 'Error al registrar el usuario';
-  }
-});
-
 // Iniciar sesión
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
