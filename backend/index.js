@@ -60,6 +60,32 @@ app.post("/login", async (req, res) => {
   }
 });
 
+
+
+// Ruta para obtener todos los oficios ACUTIALIZACION 2 AGREGAR AL RENDER
+app.get("/oficios", async (req, res) => {
+  const snapshot = await db.collection("oficios").get();
+  snapshot.docs.forEach((doc) => console.log(doc.data()));
+  const oficios = snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      folio: data.folio,
+      asunto: data.asunto,
+      destinatario: data.destinatario,
+      remitente: data.remitente,
+      estado: data.estado,
+      fecha: data.fecha && data.fecha.toDate
+        ? data.fecha.toDate().toLocaleString()
+        : "Sin fecha", // Convierte el timestamp a fecha legible
+      enlace: data.enlace,
+    };
+  });
+  res.json(oficios);
+  console.error("Error obteniendo los oficios:", error);
+    res.status(500).json({ error: "Error al obtener los oficios" });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
