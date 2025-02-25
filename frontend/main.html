@@ -14,9 +14,41 @@
         }
       });
     </script>
+    <link rel="stylesheet" href="styles_upload.css">
   </head>
   <body>
     <h1>Bienvenido al Dashboard</h1>
+
+    <!-- Agregar un oficio  -->
+<button id="openModalBtn" class="btn">Agregar Oficio</button>
+
+  <div id="modal" class="modal">
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Nuevo Oficio</h2>
+          <form id="oficioForm">
+              <label>Folio:</label>
+              <input type="text" id="folio" required>
+              
+              <label>Asunto:</label>
+              <input type="text" id="asunto" required>
+              
+              <label>Destinatario:</label>
+              <input type="text" id="destinatario" required>
+              
+              <label>Remitente:</label>
+              <input type="text" id="remitente" required>
+              
+              <label>Estado:</label>
+              <input type="text" id="estado" required>
+
+              <label>Enlace:</label>
+              <input type="text" id="enlace">
+
+              <button type="submit" class="btn">Guardar</button>
+          </form>
+      </div>
+    </div>    
     
 <!-- Listar tabla todos los oficios -->
     <table border="1">
@@ -37,6 +69,6 @@
     </table>
     <button id="logoutBtn">Cerrar Sesión</button>
 
-    <script src="./script_upload.js"></script>
+     <script src="./script_upload.js"></script>
   </body>
 </html>
