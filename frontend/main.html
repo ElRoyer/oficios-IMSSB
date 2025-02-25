@@ -17,7 +17,24 @@
   </head>
   <body>
     <h1>Bienvenido al Dashboard</h1>
-
+    
+<!-- Listar tabla todos los oficios -->
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Folio</th>
+          <th>Asunto</th>
+          <th>Destinatario</th>
+          <th>Remitente</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th>Enlace</th>
+        </tr>
+      </thead>
+      <tbody id="tablaOficios">
+        <!-- Aquí se insertarán los datos dinámicamente -->
+      </tbody>
+    </table>
     <button id="logoutBtn">Cerrar Sesión</button>
 
     <script src="./script_upload.js"></script>
