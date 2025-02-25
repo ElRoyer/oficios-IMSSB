@@ -16,6 +16,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
       console.log("Respuesta del servidor:", data);
   
       if (response.ok) {
+        localStorage.setItem("authUser", JSON.stringify(data.user)); // Guardar datos del usuario
         window.location.href = "main.html"; // Redirigir si el login es exitoso
       } else {
         errorMensaje.textContent = data.error;
