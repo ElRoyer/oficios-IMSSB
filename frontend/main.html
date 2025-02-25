@@ -1,10 +1,25 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Dashboard</title>
-</head>
-<body>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const authUser = localStorage.getItem("authUser");
+        if (!authUser) {
+          alert(
+            "No estás autenticado. Redirigiendo a la página de inicio de sesión..."
+          );
+          window.location.href = "index.html"; // Redirige a la página de login
+        }
+      });
+    </script>
+  </head>
+  <body>
     <h1>Bienvenido al Dashboard</h1>
-</body>
+
+    <button id="logoutBtn">Cerrar Sesión</button>
+
+    <script src="./script_upload.js"></script>
+  </body>
 </html>
