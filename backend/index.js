@@ -61,30 +61,31 @@ app.post("/login", async (req, res) => {
 });
 
 
-
-// Ruta para obtener todos los oficios ACUTIALIZACION 2 AGREGAR AL RENDER
+// Ruta para obtener todos los oficios
 app.get("/oficios", async (req, res) => {
-  const snapshot = await db.collection("oficios").get();
-  snapshot.docs.forEach((doc) => console.log(doc.data()));
-  const oficios = snapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      folio: data.folio,
-      asunto: data.asunto,
-      destinatario: data.destinatario,
-      remitente: data.remitente,
-      estado: data.estado,
-      fecha: data.fecha && data.fecha.toDate
-        ? data.fecha.toDate().toLocaleString()
-        : "Sin fecha", // Convierte el timestamp a fecha legible
-      enlace: data.enlace,
-    };
-  });
-  res.json(oficios);
-  console.error("Error obteniendo los oficios:", error);
+  try {
+    const snapshot = await db.collection("oficios").get();
+    const oficios = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.json(oficios);
+  } catch (error) {
+    console.error("Error obteniendo oficios:", error);
     res.status(500).json({ error: "Error al obtener los oficios" });
+  }
 });
+
+app.post("/subir_oficios", async (req, res) => {
+  try {
+    const oficio = req.body;
+    oficio.fecha = admin.firestore.Timestamp.now(); // Agrega timestamp de Firebase
+
+    const docRef = await db.collection("oficios").add(oficio);
+    res.status(201).json({ id: docRef.id, message: "Oficio agregado con éxito" });
+  } catch (error) {
+    console.error("Error al agregar oficio:", error);
+    res.status(500).json({ error: "No se pudo agregar el oficio" });
+  }
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
