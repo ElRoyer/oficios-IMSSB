@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function fetchOficios() {
     try {
-      const response = await fetch("http://localhost:3000/oficios"); // Cambia la URL si está en Render
+      const response = await fetch("https://oficios-imssb.onrender.com/oficios"); // Cambia la URL si está en Render
       const oficios = await response.json();
       const tabla = document.getElementById("tablaOficios");
       tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevos datos
