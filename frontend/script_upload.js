@@ -50,6 +50,7 @@ document.querySelector(".close").addEventListener("click", function () {
 });
 
 // 🔹 Guardar oficio en Firestore
+// 🔹 Guardar oficio en Firestore
 document.getElementById("oficioForm").addEventListener("submit", async function (event) {
     event.preventDefault();
   
@@ -69,13 +70,17 @@ document.getElementById("oficioForm").addEventListener("submit", async function 
         body: JSON.stringify(nuevoOficio),
       });
   
-      const result = await response.json();
-      alert(result.message);
-      document.getElementById("modal").style.display = "none";
-      document.getElementById("oficioForm").reset();
+      const data = await response.json();
+      if (response.ok) {
+        alert("Oficio agregado con éxito");
+        document.getElementById("modal").style.display = "none";
+        document.getElementById("oficioForm").reset();
+        fetchOficios(); // Actualizar lista de oficios
+      } else {
+        throw new Error(data.error);
+      }
     } catch (error) {
       console.error("Error al agregar el oficio:", error);
       alert("Error al agregar oficio");
     }
   });
-
