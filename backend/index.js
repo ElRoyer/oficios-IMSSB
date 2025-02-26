@@ -75,11 +75,35 @@ app.get("/oficios", async (req, res) => {
 
 app.post("/subir_oficios", async (req, res) => {
   try {
-    const oficio = req.body;
-    oficio.fecha = admin.firestore.Timestamp.now(); // Agrega timestamp de Firebase
+    const { folio, asunto, destinatario, remitente, estado, enlace } = req.body;
 
-    const docRef = await db.collection("oficios").add(oficio);
-    res.status(201).json({ id: docRef.id, message: "Oficio agregado con éxito" });
+    // 📌 Agregar la fecha automáticamente en el servidor
+    const now = new Date();
+    const fechaFormateada = now.toLocaleString("en-US", {
+      month: "short", // Mes abreviado (Ej: Feb)
+      day: "2-digit", // Día con dos dígitos
+      year: "numeric", // Año completo
+      hour: "2-digit", // Hora con dos dígitos
+      minute: "2-digit", // Minutos con dos dígitos
+      second: "2-digit", // Segundos con dos dígitos
+      hour12: false, // Formato de 24 horas
+      timeZone: "America/Mexico_City", // Zona horaria de México
+    }).replace(/(\d{4}), /, "$1 @ "); // Reemplaza la coma después del año por " @ "
+
+    const nuevoOficio = {
+      folio,
+      asunto,
+      destinatario,
+      remitente,
+      estado,
+      enlace,
+      fecha: fechaFormateada,
+    };
+
+    const docRef = await db.collection("oficios").add(nuevoOficio);
+    res
+      .status(201)
+      .json({ id: docRef.id, message: "Oficio agregado con éxito" });
   } catch (error) {
     console.error("Error al agregar oficio:", error);
     res.status(500).json({ error: "No se pudo agregar el oficio" });
