@@ -1,6 +1,9 @@
 const express = require("express");
 const admin = require("firebase-admin");
 const cors = require("cors");
+const multer = require("multer");
+const { google } = require("googleapis");
+const fs = require("fs");
 
 const app = express();
 app.use(express.json());
@@ -29,11 +32,50 @@ console.log({
 
 const db = admin.firestore();
 
+// Configura Google Drive usando variables de entorno
+
+const auth = new google.auth.GoogleAuth({
+  credentials: {
+    client_email: process.env.GOOGLE_CLIENT_EMAIL,
+    private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+    project_id: process.env.GOOGLE_PROJECT_ID,
+  },
+  scopes: ["https://www.googleapis.com/auth/drive"],
+});
+
+const drive = google.drive({ version: "v3", auth });
+
+console.log({
+  project_id: process.env.GOOGLE_PROJECT_ID,
+  client_email: process.env.GOOGLE_CLIENT_EMAIL,
+  private_key: process.env.GOOGLE_PRIVATE_KEY
+    ? "Cargada correctamente"
+    : "No cargada",
+});
+
+// Configura Multer para manejar la subida de archivos
+const upload = multer({ dest: "uploads/" });
+
+// Habilitar CORS para permitir solicitudes desde el frontend
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 app.post("/login", async (req, res) => {
   const { usuario, contrasenia } = req.body;
 
+   if (!usuario || !contrasenia) {
+    return res.status(400).json({ error: "Usuario y contraseña son requeridos" });
+  }
+  
   try {
-    const snapshot = await db.collection("usuarios").where("usuario", "==", usuario).get();
+     const usuarioStr = String(usuario); // Asegurar que sea string
+    const snapshot = await db.collection("usuarios").where("usuario", "==", usuarioStr).get();
 
     if (snapshot.empty) {
       console.log("Usuario no encontrado:", usuario);
@@ -60,7 +102,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-
 // Ruta para obtener todos los oficios
 app.get("/oficios", async (req, res) => {
   try {
@@ -73,43 +114,73 @@ app.get("/oficios", async (req, res) => {
   }
 });
 
-app.post("/subir_oficios", async (req, res) => {
+// Middleware para parsear el cuerpo de la solicitud
+app.use(express.urlencoded({ extended: true })); // Para formularios URL-encoded
+app.use(express.json()); // Para JSON
+
+//Subir archivos a drive
+app.post("/upload", upload.single("file"), async (req, res) => {
   try {
-    const { folio, asunto, destinatario, remitente, estado, enlace } = req.body;
+    console.log('Archivo recibido:', req.file);
+    
+    const fileMetadata = {
+      name: req.file.originalname,
+      parents: ["1oDpS4cpd3cztUqHcjdUStP3_rtKWCYZT"],
+    };
 
-    // 📌 Agregar la fecha automáticamente en el servidor
+    const media = {
+      mimeType: req.file.mimetype,
+      body: fs.createReadStream(req.file.path),
+    };
+
+    console.log('Subiendo archivo a Google Drive...');
+    const response = await drive.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: "id,webViewLink",
+    });
+
+    const fileUrl = response.data.webViewLink;
+    console.log('Archivo subido a Google Drive. URL:', fileUrl);
+
+
+    const { folio, asunto, destinatario, remitente, estado } = req.body;
+
     const now = new Date();
-    const fechaFormateada = now.toLocaleString("en-US", {
-      month: "short", // Mes abreviado (Ej: Feb)
-      day: "2-digit", // Día con dos dígitos
-      year: "numeric", // Año completo
-      hour: "2-digit", // Hora con dos dígitos
-      minute: "2-digit", // Minutos con dos dígitos
-      second: "2-digit", // Segundos con dos dígitos
-      hour12: false, // Formato de 24 horas
-      timeZone: "America/Mexico_City", // Zona horaria de México
-    }).replace(/(\d{4}), /, "$1 @ "); // Reemplaza la coma después del año por " @ "
+    const fechaFormateada = now
+      .toLocaleString("en-US", {
+        month: "short", // Mes abreviado (Ej: Feb)
+        day: "2-digit", // Día con dos dígitos
+        year: "numeric", // Año completo
+        hour: "2-digit", // Hora con dos dígitos
+        minute: "2-digit", // Minutos con dos dígitos
+        second: "2-digit", // Segundos con dos dígitos
+        hour12: false, // Formato de 24 horas
+        timeZone: "America/Mexico_City", // Zona horaria de México
+      })
+      .replace(/(\d{4}), /, "$1 @ "); // Reemplaza la coma después del año por " @ "
 
-    const nuevoOficio = {
+
+    // Guarda la URL en Firebase
+    await db.collection("oficios").add({
       folio,
       asunto,
       destinatario,
       remitente,
       estado,
-      enlace,
       fecha: fechaFormateada,
-    };
+      enlace: fileUrl,
+    });
 
-    const docRef = await db.collection("oficios").add(nuevoOficio);
-    res
-      .status(201)
-      .json({ id: docRef.id, message: "Oficio agregado con éxito" });
+    // Elimina el archivo temporal
+    fs.unlinkSync(req.file.path);
+
+    res.status(200).send({ url: fileUrl });
   } catch (error) {
-    console.error("Error al agregar oficio:", error);
-    res.status(500).json({ error: "No se pudo agregar el oficio" });
+    console.error(error);
+    res.status(500).send("Error uploading file");
   }
 });
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
