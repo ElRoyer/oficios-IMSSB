@@ -1,3 +1,4 @@
+console.log('Script cargado correctamente'); // Depuración
 
 document.getElementById("logoutBtn").addEventListener("click", async () => {
     try {
@@ -50,37 +51,49 @@ document.querySelector(".close").addEventListener("click", function () {
 });
 
 // 🔹 Guardar oficio en Firestore
+
 // 🔹 Guardar oficio en Firestore
-document.getElementById("oficioForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
-  
-    const nuevoOficio = {
-      folio: document.getElementById("folio").value,
-      asunto: document.getElementById("asunto").value,
-      destinatario: document.getElementById("destinatario").value,
-      remitente: document.getElementById("remitente").value,
-      estado: document.getElementById("estado").value,
-      enlace: document.getElementById("enlace").value,
-    };
-  
-    try {
-      const response = await fetch("https://oficios-imssb.onrender.com/subir_oficios", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nuevoOficio),
-      });
-  
-      const data = await response.json();
-      if (response.ok) {
-        alert("Oficio agregado con éxito");
-        document.getElementById("modal").style.display = "none";
-        document.getElementById("oficioForm").reset();
-        fetchOficios(); // Actualizar lista de oficios
-      } else {
-        throw new Error(data.error);
-      }
-    } catch (error) {
-      console.error("Error al agregar el oficio:", error);
-      alert("Error al agregar oficio");
+document.getElementById("uploadButton").addEventListener("click", async () => {
+  const fileInput = document.getElementById('fileInput');
+  const folio = document.getElementById('folio').value;
+  const asunto = document.getElementById('asunto').value;
+  const destinatario = document.getElementById('destinatario').value;
+  const remitente = document.getElementById('remitente').value;
+  const estado = document.getElementById('estado').value;
+
+  if (fileInput.files.length === 0) {
+    status.textContent = "Por favor, selecciona un archivo.";
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const formData = new FormData();
+  formData.append('file', file); // Archivo
+  formData.append('folio', folio); // Folio
+  formData.append('asunto', asunto); // Asunto
+  formData.append('destinatario', destinatario); // Destinatario
+  formData.append('remitente', remitente); // Remitente
+  formData.append('estado', estado); // Estado
+
+  status.textContent = "Subiendo archivo...";
+
+  try {
+    console.log('Enviando solicitud al backend...'); // Depuración
+    const response = await fetch("https://oficios-imssb.onrender.com/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    console.log('Respuesta recibida:', response); // Depuración
+
+    if (!response.ok) {
+      throw new Error(`Error al subir el archivo: ${response.statusText}`);
     }
-  });
+
+    const data = await response.json();
+    status.textContent = 'Archivo subido correctamente';
+  } catch (error) {
+    console.error(error);
+    status.textContent = "Error al subir el archivo.";
+  }
+});
