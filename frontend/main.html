@@ -26,29 +26,39 @@
       <div class="modal-content">
           <span class="close">&times;</span>
           <h2>Nuevo Oficio</h2>
-          <form id="oficioForm">
-              <label>Folio:</label>
-              <input type="text" id="folio" required>
-              
-              <label>Asunto:</label>
-              <input type="text" id="asunto" required>
-              
-              <label>Destinatario:</label>
-              <input type="text" id="destinatario" required>
-              
-              <label>Remitente:</label>
-              <input type="text" id="remitente" required>
-              
-              <label>Estado:</label>
-              <input type="text" id="estado" required>
+          <form id="miFormulario">
+            <label>Seleccionar archivo:</label>
+          <input type="file" id="fileInput"><br /><br />
 
-              <label>Enlace:</label>
-              <input type="text" id="enlace">
+            <label>Folio:</label>
+          <input type="text" id="folio" name="folio" required /><br /><br />
 
-              <button type="submit" class="btn">Guardar</button>
-          </form>
+          <label>Asunto:</label>
+          <input type="text" id="asunto" name="asunto" required /><br /><br />
+
+          <label>Destinatario:</label>
+          <input
+            type="text"
+            id="destinatario"
+            name="destinatario"
+            required
+          /><br /><br />
+
+          <label>Remitente:</label>
+          <input
+            type="text"
+            id="remitente"
+            name="remitente"
+            required
+          /><br /><br />
+
+          <label>Estado:</label>
+          <input type="text" id="estado" name="estado" required /><br /><br />
+
+          <button id="uploadButton">Subir</button>
+        </form>
       </div>
-    </div>    
+    </div>
     
 <!-- Listar tabla todos los oficios -->
     <table border="1">
@@ -60,7 +70,7 @@
           <th>Remitente</th>
           <th>Estado</th>
           <th>Fecha</th>
-          <th>Enlace</th>
+          <th>Url</th>
         </tr>
       </thead>
       <tbody id="tablaOficios">
