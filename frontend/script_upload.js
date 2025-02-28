@@ -1,56 +1,46 @@
 console.log('Script cargado correctamente'); // Depuración
 
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-    try {
-        // Si estás almacenando un token en localStorage, elimínalo
-        localStorage.removeItem("authUser"); 
 
-        alert("Sesión cerrada correctamente.");
-        window.location.href = "index.html"; // Redirigir al login
-    } catch (error) {
-        console.error("Error al cerrar sesión:", error);
-    }
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  try {
+    // Si estás almacenando un token en localStorage, elimínalo
+    localStorage.removeItem("authUser");
+
+    alert("Sesión cerrada correctamente.");
+    window.location.href = "index.html"; // Redirigir al login
+  } catch (error) {
+    console.error("Error al cerrar sesión:", error);
+  }
 });
 
 // Ruta para listar todos los oficios
 document.addEventListener("DOMContentLoaded", () => {
-    fetchOficios();
-  });
-  async function fetchOficios() {
-    try {
-      const response = await fetch("https://oficios-imssb.onrender.com/oficios"); // Cambia la URL si está en Render
-      const oficios = await response.json();
-      const tabla = document.getElementById("tablaOficios");
-      tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevos datos
-  
-      oficios.forEach(oficio => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${oficio.folio}</td>
-          <td>${oficio.asunto}</td>
-          <td>${oficio.destinatario}</td>
-          <td>${oficio.remitente}</td>
-          <td>${oficio.estado}</td>
-          <td>${oficio.fecha}</td>
-          <td><a href="${oficio.enlace}" target="_blank">Ver</a></td>
-        `;
-        tabla.appendChild(row);
-      });
-    } catch (error) {
-      console.error("Error al obtener los oficios:", error);
-    }
+  fetchOficios();
+});
+async function fetchOficios() {
+  try {
+    const response = await fetch("https://oficios-imssb.onrender.com/oficios"); // Cambia la URL si está en Render
+    const oficios = await response.json();
+    const tabla = document.getElementById("tablaOficios");
+    tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevos datos
+
+    oficios.forEach((oficio) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${oficio.folio}</td>
+        <td>${oficio.asunto}</td>
+        <td>${oficio.destinatario}</td>
+        <td>${oficio.remitente}</td>
+        <td>${oficio.estado}</td>
+        <td>${oficio.fecha}</td>
+        <td><a href="${oficio.enlace}" target="_blank">Ver</a></td>
+      `;
+      tabla.appendChild(row);
+    });
+  } catch (error) {
+    console.error("Error al obtener los oficios:", error);
   }
-
-// 🔹 Abrir y cerrar el modal
-document.getElementById("openModalBtn").addEventListener("click", function () {
-  document.getElementById("modal").style.display = "flex";
-});
-
-document.querySelector(".close").addEventListener("click", function () {
-  document.getElementById("modal").style.display = "none";
-});
-
-// 🔹 Guardar oficio en Firestore
+}
 
 // 🔹 Guardar oficio en Firestore
 document.getElementById("uploadButton").addEventListener("click", async () => {
@@ -96,4 +86,11 @@ document.getElementById("uploadButton").addEventListener("click", async () => {
     console.error(error);
     status.textContent = "Error al subir el archivo.";
   }
+});
+
+document.getElementById("uploadButton").addEventListener("click", function(event) {
+  event.preventDefault(); // Evita que el formulario se envíe si es necesario
+
+  // Cierra el modal cambiando la URL (simula hacer clic en el botón de cerrar)
+  window.location.hash = "#close";
 });
