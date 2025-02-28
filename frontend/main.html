@@ -14,71 +14,74 @@
         }
       });
     </script>
-    <link rel="stylesheet" href="styles_upload.css">
+    <link rel="stylesheet" href="styles_upload.css" />
   </head>
   <body>
-    <h1>Bienvenido al Dashboard</h1>
+    <div class="container">
+      <h1>Dashboard Oficios</h1>
 
-    <!-- Agregar un oficio  -->
-<button id="openModalBtn" class="btn">Agregar Oficio</button>
-
-  <div id="modal" class="modal">
-      <div class="modal-content">
-          <span class="close">&times;</span>
-          <h2>Nuevo Oficio</h2>
-          <form id="miFormulario">
-            <label>Seleccionar archivo:</label>
-          <input type="file" id="fileInput"><br /><br />
-
-            <label>Folio:</label>
-          <input type="text" id="folio" name="folio" required /><br /><br />
-
-          <label>Asunto:</label>
-          <input type="text" id="asunto" name="asunto" required /><br /><br />
-
-          <label>Destinatario:</label>
-          <input
-            type="text"
-            id="destinatario"
-            name="destinatario"
-            required
-          /><br /><br />
-
-          <label>Remitente:</label>
-          <input
-            type="text"
-            id="remitente"
-            name="remitente"
-            required
-          /><br /><br />
-
-          <label>Estado:</label>
-          <input type="text" id="estado" name="estado" required /><br /><br />
-
-          <button id="uploadButton">Subir</button>
-        </form>
-      </div>
+      <!-- Agregar otro oficio-->
+      <a href="#modal1">Agregar Oficio</a></li>
+      <div id="modal1" class="modalmask">
+        <div class="modalbox movedown">
+            <a href="#close" title="Close" class="close">X</a>
+            <h2>INGRESE INFORMACIÓN</h2>
+            <form id="miFormulario">
+              <label>Seleccionar archivo:</label>
+              <input type="file" id="fileInput" /><br /><br />
+  
+              <label>Folio:</label>
+              <input type="text" id="folio" name="folio" required /><br /><br />
+  
+              <label>Asunto:</label>
+              <input type="text" id="asunto" name="asunto" required /><br /><br />
+  
+              <label>Destinatario:</label>
+              <input
+                type="text"
+                id="destinatario"
+                name="destinatario"
+                required
+              /><br /><br />
+  
+              <label>Remitente:</label>
+              <input
+                type="text"
+                id="remitente"
+                name="remitente"
+                required
+              /><br /><br />
+  
+              <label>Estado:</label>
+              <input type="text" id="estado" name="estado" required /><br /><br />
+  
+              <button href="#close" id="uploadButton">Subir</button>
+            </form>
+        </div>
     </div>
-    
-<!-- Listar tabla todos los oficios -->
-    <table border="1">
-      <thead>
-        <tr>
-          <th>Folio</th>
-          <th>Asunto</th>
-          <th>Destinatario</th>
-          <th>Remitente</th>
-          <th>Estado</th>
-          <th>Fecha</th>
-          <th>Url</th>
-        </tr>
-      </thead>
-      <tbody id="tablaOficios">
-        <!-- Aquí se insertarán los datos dinámicamente -->
-      </tbody>
-    </table>
-    <button id="logoutBtn">Cerrar Sesión</button>
 
-     <script src="./script_upload.js"></script>
+      <!-- Tabla centrada -->
+      <div class="table-container">
+        <!-- Listar tabla todos los oficios -->
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>Asunto</th>
+              <th>Destinatario</th>
+              <th>Remitente</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th>Url</th>
+            </tr>
+          </thead>
+          <tbody id="tablaOficios">
+            <!-- Aquí se insertarán los datos dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+      <button id="logoutBtn">Cerrar Sesión</button>
+    </div>
+    <script src="./script_upload.js"></script>
   </body>
 </html>
