@@ -1,36 +1,176 @@
+/* Estilos generales */
 body {
   font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  height: 100vh;
+}
+
+
+/* Barra lateral izquierda */
+.sidebar {
+  width: 17.66%;
+  background-color: #10302a; /* Color verde oscuro */
+  align-items: center;
+  justify-content: flex-start; /* Alinea todo al inicio (arriba) */
+  padding-top: 220px; /* Ajusta la distancia desde la parte superior */
+  display: flex;
+  flex-direction: column;
+  object-fit: cover; /* Recorta la imagen sin deformarla */
+}
+
+/* Logo de la barra lateral */
+.sidebar img {
+  width: 38%;
+  max-width: 200px;
+  object-fit: cover; /* Recorta la imagen sin deformarla */
+}
+
+/* Contenedor del formulario */
+.login-container {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #f4f4f4;
-  margin: 0;
+  flex-direction: column;
+  background: linear-gradient(to bottom, #ffffff, #f8f8f8); /* Fondo degradado */
 }
 
-.login-container {
-  background: white;
-  padding: 20px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  text-align: center;
+/* Logo del IMSS */
+.login-container img {
+  width: 220px;
+  margin-bottom: 20px;
 }
 
+/* Campos de entrada */
 input {
-  display: block;
   width: 100%;
-  margin: 10px 0;
   padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
+/* Botón de inicio de sesión */
 button {
-  background: blue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: #10302a;
   color: white;
-  padding: 10px;
+  padding: 10px 15px;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+  width: 20px;
 }
 
-#error-message {
+button:hover {
+  background-color: #10302ac6;
+}
+
+/* Ícono en el botón */
+button i {
+  font-size: 18px;
+}
+
+.error{
+  color: rgba(255, 0, 0, 0.931);
+}
+
+.password-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px; /* Ajusta esto según tu diseño */
+}
+
+.password-container input {
+  width: 100%;
+  padding-right: 40px; /* Espacio para el icono */
+  height: 40px; /* Igualar altura */
+  box-sizing: border-box; /* Asegura que padding no afecte el tamaño total */
+}
+
+.password-container i {
+  position: absolute;
+  right: 10px; /* Lo pega al extremo derecho */
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+  font-size: 18px;
+}
+
+.password-container i:hover {
+  color: #333;
+}
+
+/* Asegurar que todos los inputs tengan el mismo tamaño */
+input[type="text"],
+input[type="password"], button {
+  width: 230px;
+  max-width: 300px; /* Igual al contenedor de la contraseña */
+  height: 40px; /* Mismo alto */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+#errorMensaje {
   color: red;
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: center;
+  display: none;
+  background: #ffe0e0; /* Fondo rojo claro */
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid red;
+  width: 100%;
+  max-width: 300px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Barra de progreso dentro del error */
+#progressBar {
+  width: 100%;
+  height: 3px;
+  background: red;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+#successMensaje {
+  color: green;
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: center;
+  display: none;
+  background: #e0ffe0;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid green;
+  width: 100%;
+  max-width: 300px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Barra de progreso verde */
+#successBar {
+  width: 100%;
+  height: 3px;
+  background: green;
+  position: absolute;
+  bottom: 0;
+  left: 0;
 }
