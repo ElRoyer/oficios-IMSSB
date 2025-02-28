@@ -1,19 +1,21 @@
-document.getElementById("loginForm").addEventListener("submit", async function (event) {
+document
+  .getElementById("loginForm")
+  .addEventListener("submit", async function (event) {
     event.preventDefault();
-  
-   const usuario = document.getElementById("usuario").value;
+
+    const usuario = document.getElementById("usuario").value;
     const contrasenia = document.getElementById("contrasenia").value;
     const errorMensaje = document.getElementById("errorMensaje");
     const successMensaje = document.getElementById("successMensaje");
 
- // Si la barra no existe, la creamos
+    // Si la barra no existe, la creamos
     let progressBar = document.getElementById("progressBar");
     if (!progressBar) {
       progressBar = document.createElement("div");
       progressBar.id = "progressBar";
       errorMensaje.appendChild(progressBar);
     }
-    
+
     try {
       const response = await fetch("https://oficios-imssb.onrender.com/login", {
         method: "POST",
@@ -23,27 +25,35 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
       const data = await response.json();
       console.log("Respuesta del servidor:", data);
-  
+
+      
       if (response.ok) {
-          
+        
         errorMensaje.style.display = "none";
         localStorage.setItem("authUser", JSON.stringify(data.user)); // Guardar datos del usuario
         successMensaje.style.display = "block";
         successMensaje.textContent = "Inicio de sesion exitoso"
+
         // Redirigir después de 3 segundos
         setTimeout(() => {
           window.location.href = "main.html"; // Redirigir si el login es exitoso
         }, 1000);
         //accesoMensaje.textContent = data.success;
       } else {
-         errorMensaje.textContent = data.error;
-         errorMensaje.style.display = "block";
+        errorMensaje.textContent = data.error;
+        errorMensaje.style.display = "block";
 
-          // Resetear barra de progreso
+        // Resetear barra de progreso
         progressBar.style.width = "100%";
         setTimeout(() => {
           errorMensaje.style.display = "none";
-         errorMensaje.style.display = "block";
+          contrasenia = set;
+        }, 3000);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      errorMensaje.textContent = "Error al conectar con el servidor";
+      errorMensaje.style.display = "block";
 
       // Misma animación para el error de conexión
       progressBar.style.width = "100%";
