@@ -9,6 +9,14 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: 'https://oficios-imssb-1.onrender.com' })); // Permite el frontend acceder
 
+// Opción alternativa si prefieres configurarlo manualmente:
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://oficios-imssb-1.onrender.com');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next(); // Importante para continuar con la ejecución de las rutas
+});
+
 // Configuración de Firebase con credenciales del .env
 try {
 admin.initializeApp({
@@ -105,7 +113,11 @@ app.post("/login", async (req, res) => {
 // Ruta para obtener todos los oficios
 app.get("/oficios", async (req, res) => {
   try {
-    const snapshot = await db.collection("oficios").get();
+      // Obtener los oficios y ordenarlos por fecha (de manera descendente)
+     const snapshot = await db
+     .collection("oficios")
+     .orderBy("fecha", "desc")
+     .get();
     const oficios = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     res.json(oficios);
   } catch (error) {
