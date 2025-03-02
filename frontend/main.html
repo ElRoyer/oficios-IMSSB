@@ -21,44 +21,107 @@
       <h1>Dashboard Oficios</h1>
 
       <!-- Agregar otro oficio-->
-      <a href="#modal1">Agregar Oficio</a></li>
-      <div id="modal1" class="modalmask">
+     <a href="#modal2">Agregar Oficio</a>
+      <div id="modal2" class="modalmask2">
         <div class="modalbox movedown">
-            <a href="#close" title="Close" class="close">X</a>
-            <h2>INGRESE INFORMACIÓN</h2>
-            <form id="miFormulario">
-              <label>Seleccionar archivo:</label>
+          <a href="#close" title="Close" class="close">X</a>
+          <!-- multistep form -->
+          <form
+            id="miFormulario"
+            oninput="
+              document.getElementById('folioOut').textContent = folio.value;
+              document.getElementById('asuntoOut').textContent = asunto.value;
+              document.getElementById('destinatarioOut').textContent = destinatario.value;
+              document.getElementById('remitenteOut').textContent = remitente.value;
+              document.getElementById('estadoOut').textContent = estado.value;
+          "
+          >
+            <!-- progressbar -->
+            <ul id="progressbar">
+              <li class="active">Seleccionar archivo</li>
+              <li>Registrar información</li>
+              <li>Verificar datos</li>
+            </ul>
+            <!-- fieldsets -->
+            <fieldset>
+              <h2 class="fs-title">Seleccionar archivo</h2> <br />
               <input type="file" id="fileInput" /><br /><br />
-  
-              <label>Folio:</label>
-              <input type="text" id="folio" name="folio" required /><br /><br />
-  
-              <label>Asunto:</label>
-              <input type="text" id="asunto" name="asunto" required /><br /><br />
-  
-              <label>Destinatario:</label>
+
+              <input
+                type="button"
+                name="next"
+                class="next action-button"
+                value="Next"
+              />
+            </fieldset>
+            <fieldset>
+              <h2 class="fs-title">Registrar información</h2>
+
+              <input
+                type="text"
+                id="folio"
+                name="folio"
+                placeholder="Folio"
+                required
+              /><br /><br />
+
+              <input
+                type="text"
+                id="asunto"
+                name="asunto"
+                placeholder="Asunto"
+                required
+              /><br /><br />
+
               <input
                 type="text"
                 id="destinatario"
                 name="destinatario"
+                placeholder="Destinatario"
                 required
               /><br /><br />
-  
-              <label>Remitente:</label>
+
               <input
                 type="text"
                 id="remitente"
                 name="remitente"
+                placeholder="Remitente"
                 required
               /><br /><br />
-  
-              <label>Estado:</label>
-              <input type="text" id="estado" name="estado" required /><br /><br />
-  
-              <button href="#close" id="uploadButton">Subir</button>
-            </form>
+
+              <input
+                type="text"
+                id="estado"
+                name="estado"
+                placeholder="Estado"
+                required
+              /><br /><br />
+              <input
+                type="button"
+                name="previous"
+                class="previous action-button"
+                value="Previous"
+              />
+              <input
+                type="button"
+                name="next"
+                class="next action-button"
+                value="Next"
+              />
+            </fieldset>
+            <fieldset>
+              <h2 class="fs-title">Verificar información</h2>
+              <p><b>Folio:</b> <output id="folioOut"></output></p>
+              <p><b>Asunto:</b> <output id="asuntoOut"></output></p>
+              <p><b>Destinatario:</b> <output id="destinatarioOut"></output></p>
+              <p><b>Remitente:</b> <output id="remitenteOut"></output></p>
+              <p><b>Estado:</b> <output id="estadoOut"></output></p>
+              <input type="button" name="previous" class="previous action-button" value="Previous" />
+              <button href="#close" id="uploadButton" class="submit action-button">Subir</button>
+            </fieldset>
+          </form>
         </div>
-    </div>
+      </div>
 
       <!-- Tabla centrada -->
       <div class="table-container">
@@ -82,6 +145,8 @@
       </div>
       <button id="logoutBtn">Cerrar Sesión</button>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="./script_upload.js"></script>
   </body>
 </html>
