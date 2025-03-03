@@ -243,7 +243,7 @@
 
       async function fetchOficios(next = true) {
         try {
-          let url = `http://localhost:3000/oficios?pageSize=${pageSize}`;
+          let url = `https://oficios-imssb.onrender.com/oficios?pageSize=${pageSize}`;
 
           const response = await fetch(url);
           const data = await response.json();
