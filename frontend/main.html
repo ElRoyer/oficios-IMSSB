@@ -15,13 +15,66 @@
       });
     </script>
     <link rel="stylesheet" href="styles_upload.css" />
+    <!-- Agregar DataTables desde CDN -->
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"
+    />
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   </head>
   <body>
     <div class="container">
       <h1>Dashboard Oficios</h1>
 
-      <!-- Agregar otro oficio-->
-     <a href="#modal2">Agregar Oficio</a>
+      <div class="header">
+        <div class="search-container">
+          <input
+            class="buscar"
+            type="text"
+            id="folioSearch"
+            placeholder="Buscar por Folio"
+          />
+          <button id="searchBtn">Buscar</button>
+        </div>
+
+        <a href="#modal2" class="agregar">Agregar Oficio</a>
+        <button id="logoutBtn">Cerrar Sesión</button>
+      </div>
+
+      <!-- Modal para mostrar los resultados -->
+      <div id="modal" class="modal" style="display: none">
+        <div class="modal-content">
+          <!-- Button 1-->
+          <a class="btn btn-1" href="#" id="closeModal">
+            <svg>
+              <rect x="0" y="0" fill="none" width="100%" height="100%"></rect>
+            </svg>
+            cerrar busqueda</a
+          >
+
+          <h2>Resultado de la búsqueda</h2>
+          <table id="modalTable">
+            <thead>
+              <tr>
+                <th>Folio</th>
+                <th>Asunto</th>
+                <th>Destinatario</th>
+                <th>Remitente</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Enlace</th>
+              </tr>
+            </thead>
+            <tbody id="modalBody">
+              <!-- Aquí se insertarán los datos del oficio -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div id="modal2" class="modalmask2">
         <div class="modalbox movedown">
           <a href="#close" title="Close" class="close">X</a>
@@ -44,14 +97,15 @@
             </ul>
             <!-- fieldsets -->
             <fieldset>
-              <h2 class="fs-title">Seleccionar archivo</h2> <br />
+              <h2 class="fs-title">Seleccionar archivo</h2>
+              <br />
               <input type="file" id="fileInput" /><br /><br />
 
               <input
                 type="button"
                 name="next"
                 class="next action-button"
-                value="Next"
+                value="Siguiente"
               />
             </fieldset>
             <fieldset>
@@ -100,13 +154,13 @@
                 type="button"
                 name="previous"
                 class="previous action-button"
-                value="Previous"
+                value="Regresar"
               />
               <input
                 type="button"
                 name="next"
                 class="next action-button"
-                value="Next"
+                value="Siguiente"
               />
             </fieldset>
             <fieldset>
@@ -116,8 +170,20 @@
               <p><b>Destinatario:</b> <output id="destinatarioOut"></output></p>
               <p><b>Remitente:</b> <output id="remitenteOut"></output></p>
               <p><b>Estado:</b> <output id="estadoOut"></output></p>
-              <input type="button" name="previous" class="previous action-button" value="Previous" />
-              <button href="#close" id="uploadButton" class="submit action-button">Subir</button>
+              <input
+                type="button"
+                name="previous"
+                class="previous action-button"
+                value="Regresar"
+              />
+              <button
+                href="#close"
+                id="uploadButton"
+                disabled
+                class="submit action-button"
+              >
+                Subir
+              </button>
             </fieldset>
           </form>
         </div>
@@ -126,7 +192,7 @@
       <!-- Tabla centrada -->
       <div class="table-container">
         <!-- Listar tabla todos los oficios -->
-        <table border="1">
+        <table id="tablaOficios" border="1">
           <thead>
             <tr>
               <th>Folio</th>
@@ -135,17 +201,109 @@
               <th>Remitente</th>
               <th>Estado</th>
               <th>Fecha</th>
-              <th>Url</th>
+              <th>Enlace</th>
+              <th>Modificar</th>
             </tr>
           </thead>
-          <tbody id="tablaOficios">
+          <tbody id="tablaCuerpo">
             <!-- Aquí se insertarán los datos dinámicamente -->
           </tbody>
         </table>
       </div>
-      <button id="logoutBtn">Cerrar Sesión</button>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <!-- Modal para editar -->
+    <div id="modalEditar" class="modalEditar">
+      <div class="modal-content-editar">
+        <span class="close" onclick="cerrarModalEditar()">&times;</span>
+        <h3>Modificar Oficio</h3>
+        <input type="hidden" id="editId" />
+        <label>Folio:</label><br />
+        <input type="text" id="editFolio" /><br /><br />
+        <label>Asunto:</label><br />
+        <input type="text" id="editAsunto" /><br /><br />
+        <label>Destinatario:</label><br />
+        <input type="text" id="editDestinatario" /><br /><br />
+        <label>Remitente:</label><br />
+        <input type="text" id="editRemitente" /><br /><br />
+        <label>Estado:</label><br />
+        <input type="text" id="editEstado" /><br /><br />
+        <button onclick="updateOficio()">Guardar Cambios</button>
+      </div>
+    </div>
+
+    <script>
+      let lastVisible = null;
+      const pageSize = 12;
+      let canLoadNext = false;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchOficios();
+      });
+
+      async function fetchOficios(next = true) {
+        try {
+          let url = `http://localhost:3000/oficios?pageSize=${pageSize}`;
+
+          const response = await fetch(url);
+          const data = await response.json();
+
+          if (!data || !data.oficios || !Array.isArray(data.oficios)) {
+            console.error(
+              "⚠ Error: No se recibieron datos válidos. Respuesta",
+              data
+            );
+            return;
+          }
+          const oficios = data.oficios; // ✅ Extraer correctamente los datos
+          lastVisible = data.lastVisible; // ✅ Guardar el último documento recibido
+
+          // Verifica si hay más datos para cargar
+          canLoadNext = data.lastVisible !== null;
+
+          updateTable(oficios);
+        } catch (error) {
+          console.error("Error al obtener los oficios:", error);
+        }
+      }
+
+      function updateTable(oficios) {
+        const tabla = document.querySelector("#tablaCuerpo");
+        tabla.innerHTML = ""; // ✅ Limpiar antes de agregar nuevos datos
+
+        if (!oficios || oficios.length === 0) {
+          tabla.innerHTML =
+            "<tr><td colspan='7'>No hay oficios disponibles</td></tr>";
+          return;
+        }
+
+        oficios.forEach((oficio) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${oficio.folio || "N/A"}</td>
+            <td>${oficio.asunto || "N/A"}</td>
+            <td>${oficio.destinatario || "N/A"}</td>
+            <td>${oficio.remitente || "N/A"}</td>
+            <td>${oficio.estado || "N/A"}</td>
+            <td>${
+              oficio.fecha ? new Date(oficio.fecha).toLocaleString() : "N/A"
+            }</td>
+            <td><a href="${oficio.enlace || "#"}" target="_blank">Ver</a></td>
+            <td>
+              <button onclick='abrirModalEditar("${oficio.id}", "${
+            oficio.folio || ""
+          }", "${oficio.asunto || ""}", "${oficio.destinatario || ""}", "${
+            oficio.remitente || ""
+          }", "${oficio.estado || ""}")'>
+  Modificar
+</button>
+            </td>
+        `;
+          tabla.appendChild(row);
+        });
+      }
+    </script>
+
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="./script_upload.js"></script>
   </body>
