@@ -1,4 +1,5 @@
 const express = require("express");
+const express = require("express");
 const admin = require("firebase-admin");
 const cors = require("cors");
 const multer = require("multer");
@@ -7,27 +8,29 @@ const fs = require("fs");
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: 'https://oficios-imssb-1.onrender.com' })); // Permite el frontend acceder
+app.use(cors({ origin: "*" }));
 
 // Opción alternativa si prefieres configurarlo manualmente:
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://oficios-imssb-1.onrender.com');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://oficios-imssb-1.onrender.com"
+  );
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next(); // Importante para continuar con la ejecución de las rutas
 });
-
 // Configuración de Firebase con credenciales del .env
 try {
-admin.initializeApp({
-  credential: admin.credential.cert({
-    type: "service_account",
-    project_id: process.env.FIREBASE_PROJECT_ID,
-    private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-    client_email: process.env.FIREBASE_CLIENT_EMAIL,
-  }),
-});
-console.log("Firebase inicializado correctamente.");
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      type: "service_account",
+      project_id: process.env.FIREBASE_PROJECT_ID,
+      private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+      client_email: process.env.FIREBASE_CLIENT_EMAIL,
+    }),
+  });
+  console.log("Firebase inicializado correctamente.");
 } catch (error) {
   console.error("Error inicializando Firebase:", error);
 }
@@ -35,7 +38,9 @@ console.log("Firebase inicializado correctamente.");
 console.log({
   project_id: process.env.FIREBASE_PROJECT_ID,
   client_email: process.env.FIREBASE_CLIENT_EMAIL,
-  private_key: process.env.FIREBASE_PRIVATE_KEY ? "Cargada correctamente" : "No cargada",
+  private_key: process.env.FIREBASE_PRIVATE_KEY
+    ? "Cargada correctamente"
+    : "No cargada",
 });
 
 const db = admin.firestore();
@@ -77,13 +82,18 @@ app.use((req, res, next) => {
 app.post("/login", async (req, res) => {
   const { usuario, contrasenia } = req.body;
 
-   if (!usuario || !contrasenia) {
-    return res.status(400).json({ error: "Usuario y contraseña son requeridos" });
+  if (!usuario || !contrasenia) {
+    return res
+      .status(400)
+      .json({ error: "Usuario y contraseña son requeridos" });
   }
-  
+
   try {
-     const usuarioStr = String(usuario); // Asegurar que sea string
-    const snapshot = await db.collection("usuarios").where("usuario", "==", usuarioStr).get();
+    const usuarioStr = String(usuario); // Asegurar que sea string
+    const snapshot = await db
+      .collection("usuarios")
+      .where("usuario", "==", usuarioStr)
+      .get();
 
     if (snapshot.empty) {
       console.log("Usuario no encontrado:", usuario);
@@ -99,30 +109,57 @@ app.post("/login", async (req, res) => {
 
     if (user.contrasenia === contrasenia) {
       console.log("Inicio de sesión exitoso");
-      return res.json({ success: true });
+      return res.json({ success: "Inicio de Sesion Exitoso" });
     } else {
       console.log("Contraseña incorrecta");
       return res.status(401).json({ error: "Contraseña incorrecta" });
     }
   } catch (error) {
-    console.error("Error en el servidor:", error.message);
-    return res.status(500).json({ error: "Error en el servidor", details: error.message });
+    console.error("Error en el servidor", error.message);
+    return res
+      .status(500)
+      .json({ error: "Error en el servidor: 1", details: error.message });
   }
 });
 
 // Ruta para obtener todos los oficios
 app.get("/oficios", async (req, res) => {
   try {
-      // Obtener los oficios y ordenarlos por fecha (de manera descendente)
-     const snapshot = await db
-     .collection("oficios")
-     .orderBy("fecha", "desc")
-     .get();
-    const oficios = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    res.json(oficios);
+    let { lastVisible, pageSize } = req.query;
+    pageSize = parseInt(pageSize) || 4; // por defecto 12 registros
+
+    let query = db
+      .collection("oficios")
+      .orderBy("fecha", "desc")
+      .limit(pageSize);
+
+    if (lastVisible) {
+      // Convierte el `lastVisible` de la URL a un `DocumentSnapshot` de Firestore
+      const lastDoc = await db.collection("oficios").doc(lastVisible).get();
+      if (lastDoc.exists) {
+        query = query.startAfter(lastDoc);
+      }
+    }
+    const snapshot = await query.get();
+    const oficios = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      const fecha = data.fecha ? data.fecha.toDate().toISOString() : null;
+      return { id: doc.id, ...data, fecha }; // Agregar la fecha formateada
+    });
+
+    if (!oficios || oficios.length === 0) {
+      return res.status(404).json({ error: "No se encontraron registros" });
+    }
+
+    const last =
+      snapshot.docs.length > 0
+        ? snapshot.docs[snapshot.docs.length - 1].id
+        : null;
+
+    res.json({ oficios, lastVisible: last });
   } catch (error) {
-    console.error("Error obteniendo oficios:", error);
-    res.status(500).json({ error: "Error al obtener los oficios" });
+    console.error("Error en la consulta:", error);
+    res.status(500).json({ error: "Error obteniendo los datos" });
   }
 });
 
@@ -133,8 +170,19 @@ app.use(express.json()); // Para JSON
 //Subir archivos a drive
 app.post("/upload", upload.single("file"), async (req, res) => {
   try {
-    console.log('Archivo recibido:', req.file);
-    
+    console.log("Archivo recibido:", req.file);
+
+    // Obtener los campos del cuerpo de la solicitud
+    const { folio, asunto, destinatario, remitente, estado, fecha } = req.body;
+
+    if (!req.file) {
+      return res.status(400).send("No se recibió ningún archivo.");
+    }
+
+    if (!folio || !asunto || !destinatario || !remitente || !estado) {
+      return res.status(400).send("Todos los campos son obligatorios.");
+    }
+
     const fileMetadata = {
       name: req.file.originalname,
       parents: ["1oDpS4cpd3cztUqHcjdUStP3_rtKWCYZT"],
@@ -145,7 +193,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       body: fs.createReadStream(req.file.path),
     };
 
-    console.log('Subiendo archivo a Google Drive...');
+    console.log("Subiendo archivo a Google Drive...");
     const response = await drive.files.create({
       resource: fileMetadata,
       media: media,
@@ -153,25 +201,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     });
 
     const fileUrl = response.data.webViewLink;
-    console.log('Archivo subido a Google Drive. URL:', fileUrl);
-
-
-    const { folio, asunto, destinatario, remitente, estado } = req.body;
-
-    const now = new Date();
-    const fechaFormateada = now
-      .toLocaleString("en-US", {
-        month: "short", // Mes abreviado (Ej: Feb)
-        day: "2-digit", // Día con dos dígitos
-        year: "numeric", // Año completo
-        hour: "2-digit", // Hora con dos dígitos
-        minute: "2-digit", // Minutos con dos dígitos
-        second: "2-digit", // Segundos con dos dígitos
-        hour12: false, // Formato de 24 horas
-        timeZone: "America/Mexico_City", // Zona horaria de México
-      })
-      .replace(/(\d{4}), /, "$1 @ "); // Reemplaza la coma después del año por " @ "
-
+    console.log("Archivo subido a Google Drive. URL:", fileUrl);
 
     // Guarda la URL en Firebase
     await db.collection("oficios").add({
@@ -180,12 +210,14 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       destinatario,
       remitente,
       estado,
-      fecha: fechaFormateada,
+      fecha: admin.firestore.Timestamp.now(), // Asigna la fecha actual
       enlace: fileUrl,
     });
 
     // Elimina el archivo temporal
-    fs.unlinkSync(req.file.path);
+    if (fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
 
     res.status(200).send({ url: fileUrl });
   } catch (error) {
@@ -194,7 +226,66 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
+app.get("/oficios/search", async (req, res) => {
+  try {
+    const { folio } = req.query;
+    console.log("Búsqueda de oficio por folio:", folio); // Log de folio recibido
+
+    if (!folio) {
+      return res.status(400).json({ error: "Folio es obligatorio" });
+    }
+
+    // Realizar la búsqueda por folio en Firestore
+    const snapshot = await db
+      .collection("oficios")
+      .where("folio", "==", folio)
+      .get();
+
+    const oficios = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      const fecha = data.fecha ? data.fecha.toDate().toISOString() : null;
+      return { id: doc.id, ...data, fecha }; // Devolver el oficio con la fecha formateada
+    });
+
+    if (oficios.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No se encontró el oficio con ese folio" });
+    }
+
+    console.log("Oficios encontrados:", oficios); // Log de los oficios encontrados
+    res.json({ oficios });
+  } catch (error) {
+    console.error("Error en la búsqueda:", error);
+    res.status(500).json({ error: "Error al buscar el oficio" });
+  }
+});
+
+// Asegúrate de que la ruta esté configurada correctamente
+app.put("/oficios/:id", async (req, res) => {
+  const id = req.params.id; // Obtener el id de la URL
+  const { folio, asunto, destinatario, remitente, estado } = req.body;
+
+  try {
+    // Actualizar el documento con el ID dado
+    const oficioRef = db.collection("oficios").doc(id);
+    await oficioRef.update({
+      folio,
+      asunto,
+      destinatario,
+      remitente,
+      estado,
+    });
+
+    res.status(200).json({ message: "Oficio actualizado correctamente" });
+  } catch (error) {
+    console.error("Error al actualizar el oficio:", error);
+    res.status(500).json({ message: "Error al actualizar el oficio", error });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
