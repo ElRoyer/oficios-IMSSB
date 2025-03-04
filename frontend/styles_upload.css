@@ -9,6 +9,17 @@
     margin-bottom: 5%;
 }
 
+.modal{
+    width: auto;
+    position: static;
+    padding: 5px 20px 13px 20px;
+}
+
+.modalcontent{
+    width: 100%;
+    position: static;
+    padding: 5px 20px 13px 20px;
+}
 
 .modalmask2 {
     position: fixed;
@@ -29,7 +40,6 @@
     opacity:1;
     pointer-events: auto;
 }
-
 /*Formato de la ventana*/
 .modalbox{
     width: 400px;
@@ -42,7 +52,6 @@
     transition: all 500ms ease-in;
      
 }
-
 /*Movimientos*/
 .movedown {
     margin: 0 auto;
@@ -181,13 +190,9 @@ h2 {
 }
 /* Estilos generales */
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial;
     background-color: #f4f4f4;
     margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     height: auto;
     text-align: center;
 }
@@ -232,16 +237,6 @@ table tr:hover {
     cursor: pointer;
 }
 
-/* Botones */
-.btn {
-    padding: 10px 18px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.3s;
-}
-
 .btn-primary {
     background-color: #28a745;
     color: white;
@@ -259,7 +254,6 @@ table tr:hover {
 .btn-danger:hover {
     background-color: #c82333;
 }
-
 
 #miFormulario fieldset {
 	background: white;
@@ -299,7 +293,7 @@ table tr:hover {
 /*buttons*/
 #miFormulario .action-button {
 	width: 100px;
-	background: #27AE60;
+	background: #10302a;
 	font-weight: bold;
 	color: white;
 	border: 0 none;
@@ -311,7 +305,7 @@ table tr:hover {
   font-size: 14px;
 }
 #miFormulario .action-button:hover, #miFormulario .action-button:focus {
-	box-shadow: 0 0 0 2px white, 0 0 0 3px #27AE60;
+	box-shadow: 0 0 0 2px white, 0 0 0 3px #10302a;
 }
 /*headings*/
 .fs-title {
@@ -372,7 +366,7 @@ table tr:hover {
 /*marking active/completed steps green*/
 /*The number of the step and the connector before it = green*/
 #progressbar li.active:before,  #progressbar li.active:after{
-	background: #27AE60;
+	background: #10302a;
 	color: white;
 }
 
@@ -397,24 +391,6 @@ table {
     display: flex;
     justify-content: center;
     margin-top: 10px;
-  }
-  
-  button {
-    background-color: #bc955d;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    margin: 5px;
-    cursor: pointer;
-    width: 120px;
-    height: 50px;
-    font-size: 15px;
-  }
-  
-  button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
   }
 
   .alert {
@@ -441,7 +417,7 @@ table {
     font-size: 15px;
     text-decoration: none;
     cursor: pointer;
-    height: 25px;
+    height: auto;
   }
 
 .btn {
@@ -449,15 +425,15 @@ table {
     background-color: #bc955d;
     cursor: pointer;
     display: block;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 300;
     line-height: 15px;
-    margin: 0 auto 2em;
-    max-width: 100px;
+    margin: 1em 1em;
+    max-width: 150px;
     position: relative;
     text-decoration: none;
     text-transform: uppercase;
-    width: 100%;
+    width: auto;
 
     @media (min-width: 400px) {
         display: inline-block;
@@ -482,7 +458,6 @@ table {
         text-decoration: none;
     }
 }
-
 
 .btn-1 {
     background: darken(#9a3f2f, 1.5%);
@@ -525,39 +500,47 @@ table {
     margin-bottom: 20px;
 }
 
+button{
+    background-color: #10302a00;
+    border: none;
+}
 
-/*Modal Editar*/
-.modalmaskEditar {
+.modalEditar{
+    display: none; /* Oculto por defecto */
     position: fixed;
-    font-family: Arial, sans-serif;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: rgba(0,0,0,0.8);
-    z-index: 9999;
-    opacity:0;
-    -webkit-transition: opacity 400ms ease-in;
-    -moz-transition: opacity 400ms ease-in;
-    transition: opacity 400ms ease-in;
-    pointer-events: none;
-}
-.modalmaskEditar:target {
-    opacity:1;
-    pointer-events: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    top: 56%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centra el modal */
+    background: rgb(255, 255, 255);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 9999; /* Asegura que está por encima de la tabla */
+    width: 60%; /* Ajusta el tamaño */
+    max-width: 800px;
 }
 
-/*Formato de la ventana*/
-.modalmaskEditar{
-    width: 400px;
-    position: relative;
-    padding: 5px 20px 13px 20px;
-    background: #fff;
-    border-radius:3px;
-    -webkit-transition: all 500ms ease-in;
-    -moz-transition: all 500ms ease-in;
-    transition: all 500ms ease-in;
-     
+.modalEditar input{
+    width: 40%; /* Que los inputs ocupen todo el ancho */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+
+/* Estilo para el fondo oscuro cuando se activa el modal */
+.modal-overlay {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Fondo oscuro semi-transparente */
+    z-index: 998; /* Detrás del modal pero delante del contenido */
 }
 
 /*Movimientos*/
@@ -607,4 +590,9 @@ table {
 .close:hover {
     background: #FAAC58;
     color:#222;
+}
+
+.fa-solid {
+    color: rgb(0, 0, 0);  /* Puedes usar cualquier color */
+    font-size: 20px; /* Ajusta el tamaño si lo necesitas */
 }
