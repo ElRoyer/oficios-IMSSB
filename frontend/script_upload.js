@@ -261,7 +261,7 @@ async function searchFolio() {
 
 // Función para mostrar mensajes en la interfaz
 function showMessage(message) {
-  const messageElement = document.createElement("div");
+  const messageElement = document.createElement("divalert");
   messageElement.classList.add("alert");
   messageElement.textContent = message;
 
@@ -306,6 +306,8 @@ function closeModal() {
 function abrirModalEditar(id, folio, asunto, destinatario, remitente, estado) {
   console.log("Abriendo modal para editar el oficio:", id); // Debugging
 
+  document.getElementById("modalOverlay").style.display = "block";
+
   // Asegurar que los elementos existen antes de modificar
   const inputId = document.getElementById("editId"); // Cambiar a "editId"
   const inputFolio = document.getElementById("editFolio"); // Cambiar a "editFolio"
@@ -323,7 +325,7 @@ function abrirModalEditar(id, folio, asunto, destinatario, remitente, estado) {
     !inputRemitente ||
     !inputEstado
   ) {
-    console.error("Error: No se encontraron los elementos del formulario.");
+    console.error("❌ Error: No se encontraron los elementos del formulario.");
     return;
   }
 
@@ -342,6 +344,7 @@ function abrirModalEditar(id, folio, asunto, destinatario, remitente, estado) {
 // Cerrar el modal
 function cerrarModalEditar() {
   document.getElementById("modalEditar").style.display = "none";
+  document.getElementById("modalOverlay").style.display = "none";
 }
 
 async function updateOficio() {
@@ -358,7 +361,7 @@ async function updateOficio() {
 
    // Verifica que todos los elementos existan antes de usarlos
   if (!inputId || !inputFolio || !inputAsunto || !inputDestinatario || !inputRemitente || !inputEstado) {
-    console.error("Error: No se encontraron los elementos del formulario.");
+    console.error("❌ Error: No se encontraron los elementos del formulario.");
     return;
   }
 
@@ -383,11 +386,11 @@ async function updateOficio() {
     });
 
     if (response.ok) {
-      alert("Oficio actualizado correctamente.");
+      alert("✅ Oficio actualizado correctamente.");
       cerrarModalEditar();
       fetchOficios(); // Recargar la tabla después de editar
     } else {
-      alert("Error al actualizar el oficio.");
+      alert("❌ Error al actualizar el oficio.");
     }
   } catch (error) {
     console.error("Error en la actualización:", error);
