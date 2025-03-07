@@ -283,6 +283,51 @@ app.put("/oficios/:id", async (req, res) => {
   }
 });
 
+//Filtrar por fecha
+// Función para filtrar por fecha
+
+// Endpoint para filtrar oficios
+app.post("/filtrar-oficios", async (req, res) => {
+  try {
+    const { fechaInicio, fechaFin } = req.body;
+
+    if (!fechaInicio || !fechaFin) {
+      return res.status(400).json({ error: "Fechas inválidas" });
+    }
+
+    const snapshot = await db.collection("oficios").get();
+    let oficios = [];
+
+    console.log("Fecha Inicio recibida:", new Date(fechaInicio).toISOString());
+    console.log("Fecha Fin recibida:", new Date(fechaFin).toISOString());
+
+
+    snapshot.forEach((doc) => {
+      let data = doc.data();
+      let fechaTimestamp;
+
+      if (data.fecha && data.fecha.toDate) {
+        fechaTimestamp = data.fecha.toDate().getTime();
+      } else if (typeof data.fecha === "number") {
+        fechaTimestamp = data.fecha;
+      } else {
+        console.warn(`Registro con ID ${doc.id} tiene una fecha inválida.`);
+        return;
+      }
+
+      if (fechaTimestamp >= fechaInicio && fechaTimestamp <= fechaFin) {
+        oficios.push({ id: doc.id, ...data });
+      }
+    });
+
+    res.json(oficios);
+  } catch (error) {
+    console.error("Error al filtrar oficios:", error);
+    res.status(500).json({ error: "Error al obtener los datos" });
+  }
+});
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
