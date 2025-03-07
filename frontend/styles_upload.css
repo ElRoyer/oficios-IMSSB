@@ -272,18 +272,7 @@ table tr:hover {
 #miFormulario fieldset:not(:first-of-type) {
 	display: none;
 }
-/*inputs*/
-#miFormulario input, #miFormulario textarea {
-	padding: 15px;
-	border: 1px solid #ccc;
-	border-radius: 3px;
-	margin-bottom: 10px;
-	width: 100%;
-	box-sizing: border-box;
-	font-family: montserrat;
-	color: #2C3E50;
-	font-size: 13px;
-}
+
 
 .buscar{
     height: 35px;
@@ -331,7 +320,7 @@ table tr:hover {
 	list-style-type: none;
 	color: white;
 	text-transform: uppercase;
-	font-size: 9px;
+	font-size: 12px;
 	width: 33.33%;
 	float: left;
 	position: relative;
@@ -368,6 +357,16 @@ table tr:hover {
 #progressbar li.active:before,  #progressbar li.active:after{
 	background: #10302a;
 	color: white;
+}
+
+.active {
+background-color: rgba(255, 0, 0, 0);
+border-radius: 20px;
+cursor: pointer;
+}
+
+.cerrar{
+    background-color: #10302a84;
 }
 
 table {
