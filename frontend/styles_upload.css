@@ -521,14 +521,14 @@ button{
     max-width: 800px;
 }
 
-
 @media (max-width: 600px) {
-    .modal {
+    .modalEditar {
         width: 90%;
-        height: 80%;
+        height: 65%;
         max-width: none;
     }
 }
+
 
 
 .modalEditar input{
