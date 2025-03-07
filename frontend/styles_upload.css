@@ -521,6 +521,16 @@ button{
     max-width: 800px;
 }
 
+
+@media (max-width: 600px) {
+    .modal {
+        width: 90%;
+        height: 80%;
+        max-width: none;
+    }
+}
+
+
 .modalEditar input{
     width: 40%; /* Que los inputs ocupen todo el ancho */
     padding: 8px;
