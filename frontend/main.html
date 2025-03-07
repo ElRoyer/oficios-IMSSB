@@ -55,7 +55,7 @@
       rel="shortcut icon"
     />
     <script
-      src="https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js"
+      src="http://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js"
       type="text/javascript"
       async=""
     ></script>
@@ -75,6 +75,11 @@
       src="https://framework-gb.cdn.gob.mx/assets/scripts/vendor/analitycs.js"
     ></script>
     <link
+      rel="stylesheet"
+      href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300,600,700&amp;subset=latin"
+      media="all"
+    />
+    <link
       href="https://fonts.googleapis.com/css?family=Open+Sans&amp;display=swap"
       rel="stylesheet"
     />
@@ -82,6 +87,9 @@
       href="https://fonts.googleapis.com/css2?family=Anton&display=swap"
       rel="stylesheet"
     />
+    <!-- Incluir jsPDF y autoTable desde CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
@@ -133,11 +141,13 @@
           id="subenlaces"
         >
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#" class="active">Algo aqui</a></li>
-            <li><a href="#" class="active">Algo aqui</a></li>
-            <li><a href="#" class="active">Algo aqui</a></li>
-            <li><a href="#" class="active">Algo aqui</a></li>
-            <li><a href="#" class="active">Algo aqui</a></li>
+            <li><a href="#modal2" class="active">AGREGAR OFICIO</a></li>
+            <li>
+              <a onclick="mostrarFiltro()" class="active">FILTRAR FECHA</a>
+            </li>
+            <li><a id="generarPDF" class="active">EXPORTAR PDF</a></li>
+            <li><a id="exportarExcel" class="active">EXPORTAR EXCEL</a></li>
+            <li><a id="logoutBtn" class="active cerrar">CERRAR SESIÓN</a></li>
           </ul>
         </div>
       </nav>
@@ -146,6 +156,7 @@
 
     <div class="container">
       <h2>Oficios Causen</h2>
+      <hr class="red" />
       <br />
       <br />
 
@@ -160,8 +171,23 @@
           <button id="searchBtn" class="agregar">Buscar</button>
         </div>
 
-        <a href="#modal2" class="agregar">Agregar Oficio</a>
-        <button id="logoutBtn" class="agregar">Cerrar Sesión</button>
+        <div id="fechaFiltro" style="display: none">
+          <label>Desde: <input type="date" id="fechaInicio" /></label>
+          <label>Hasta: <input type="date" id="fechaFin" /></label>
+          <button onclick="filtrarPorFecha()">Buscar</button>
+          <span
+            id="filtroActivo"
+            style="
+              display: none;
+              color: #9a3f2f;
+              font-size: 20px;
+              cursor: pointer;
+            "
+            onclick="eliminarFiltro()"
+            >❌</span
+          >
+        </div>
+        <div id="resultados"></div>
       </div>
 
       <!-- Modal para mostrar los resultados -->
@@ -186,6 +212,7 @@
                 <th>Estado</th>
                 <th>Fecha</th>
                 <th>Enlace</th>
+                <th>Editar</th>
               </tr>
             </thead>
             <tbody id="modalBody">
@@ -353,7 +380,7 @@
         <input type="text" id="editEstado" /><br /><br />
         <button onclick="updateOficio()"></button>
         <!-- Button 1-->
-        <a class="btn btn-1" onclick="updateOficio()"id="closeModal">
+        <a class="btn btn-1" onclick="updateOficio()" id="closeModal">
           <svg>
             <rect x="0" y="0" fill="none" width="100%" height="100%"></rect>
           </svg>
@@ -361,9 +388,11 @@
         >
       </div>
     </div>
+
+    <!--Modal para mostrar registros en la tabla-->
     <script>
       let lastVisible = null;
-      const pageSize = 12;
+      const pageSize = 120;
       let canLoadNext = false;
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -433,8 +462,17 @@
           tabla.appendChild(row);
         });
       }
+      document
+        .getElementById("btnNext")
+        .addEventListener("click", () => fetchOficios(true));
+      document
+        .getElementById("btnPrev")
+        .addEventListener("click", () => fetchOficios(false));
     </script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+
     <script src="./script_upload.js"></script>
   </body>
 </html>
