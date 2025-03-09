@@ -55,7 +55,7 @@
       rel="shortcut icon"
     />
     <script
-      src="http://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js"
+      src="https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js"
       type="text/javascript"
       async=""
     ></script>
@@ -403,7 +403,7 @@
 
       async function fetchOficios(next = true) {
         try {
-          let url = `http://localhost:3000/oficios?pageSize=${pageSize}`;
+          let url = `https://oficios-imssb.onrender.com/oficios?pageSize=${pageSize}`;
 
           const response = await fetch(url);
           const data = await response.json();
