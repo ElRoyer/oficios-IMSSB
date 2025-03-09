@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 
 app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' https://framework-gb.cdn.gob.mx;");
+  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' https://oficios-imssb-1.onrender.com;");
   next();
 });
 // Configuración de Firebase con credenciales del .env
