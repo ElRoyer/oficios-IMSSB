@@ -155,7 +155,7 @@
     <!--- FIN MENÚ --->
 
     <div class="container">
-      <h2>Oficios Causen</h2>
+      <h2>Oficios CUSeN</h2>
       <hr class="red" />
       <br />
       <br />
@@ -247,8 +247,8 @@
             <fieldset>
               <h2 class="fs-title">Seleccionar archivo</h2>
               <br />
-              <input type="file" id="fileInput" /><br /><br />
-
+              <input type="file" id="fileInput" accept=".jpg, .jpeg, .png, .pdf"/><br /><br />
+              <span id="fileError" style="color: red;"></span>
               <input
                 type="button"
                 name="next"
@@ -361,7 +361,6 @@
     </div>
 
     <!-- Modal para editar -->
-
     <div class="modal-overlay" id="modalOverlay"></div>
     <div id="modalEditar" class="modalEditar" style="display: none">
       <div class="modal-content-editar">
@@ -389,6 +388,14 @@
       </div>
     </div>
 
+    <!--Alerta Modificacion-->
+    <div id="customAlert" class="alert">
+      <span id="alertIcon">⚠️</span>
+      <span id="alertMessage"></span> <br/>
+      <button onclick="closeAlert()">OK</button>
+    </div>
+
+
     <!--Modal para mostrar registros en la tabla-->
     <script>
       let lastVisible = null;
@@ -401,16 +408,13 @@
 
       async function fetchOficios(next = true) {
         try {
-          let url = `https://oficios-imssb.onrender.com/oficios?pageSize=${pageSize}`;
+          let url = `http://localhost:3000/oficios?pageSize=${pageSize}`;
 
           const response = await fetch(url);
           const data = await response.json();
 
           if (!data || !data.oficios || !Array.isArray(data.oficios)) {
-            console.error(
-              "⚠ Error: No se recibieron datos válidos. Respuesta",
-              data
-            );
+            showAlert("Error no se recibieron datos válidos.", "error");
             return;
           }
           const oficios = data.oficios; // ✅ Extraer correctamente los datos
@@ -421,7 +425,7 @@
 
           updateTable(oficios);
         } catch (error) {
-          console.error("Error al obtener los oficios:", error);
+          showAlert("Error al obtener los oficios.", "error");
         }
       }
 
