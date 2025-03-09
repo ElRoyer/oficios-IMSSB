@@ -518,7 +518,6 @@ button{
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
     z-index: 9999; /* Asegura que está por encima de la tabla */
     width: 60%; /* Ajusta el tamaño */
-    max-width: 800px;
 }
 
 @media (max-width: 600px) {
@@ -528,7 +527,6 @@ button{
         max-width: none;
     }
 }
-
 
 
 .modalEditar input{
@@ -605,3 +603,49 @@ button{
     color: rgb(0, 0, 0);  /* Puedes usar cualquier color */
     font-size: 20px; /* Ajusta el tamaño si lo necesitas */
 }
+
+.alert {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgb(0, 0, 0);
+    display: none; /* Oculto por defecto */
+    text-align: center;
+    width: auto;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  /* Diferentes estilos según el tipo de alerta */
+  .alert.success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .alert.error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  .alert.warning {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  
+  .alert button {
+    margin-top: 20px;
+    padding: 8px 16px;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .alert button:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  
