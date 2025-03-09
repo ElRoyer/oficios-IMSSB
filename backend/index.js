@@ -10,12 +10,8 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 
 app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' https://oficios-imssb.onrender.com/");
+  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' https://framework-gb.cdn.gob.mx;");
   next();
-});
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next(); // Importante para continuar con la ejecución de las rutas
 });
 // Configuración de Firebase con credenciales del .env
 try {
