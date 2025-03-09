@@ -1,14 +1,15 @@
-console.log("Script cargado correctamente"); // Depuración
-
 document.getElementById("logoutBtn").addEventListener("click", async () => {
   try {
     // Si estás almacenando un token en localStorage, elimínalo
     localStorage.removeItem("authUser");
-
-    alert("Sesión cerrada correctamente.");
-    window.location.href = "index.html"; // Redirigir al login
+    showAlert("Sesión cerrada correctamente.", "success");
+    // Redirigir después de 3 segundos
+    setTimeout(() => {
+      window.location.href = "index.html"; // Redirigir al index
+    }, 2000);
   } catch (error) {
     console.error("Error al cerrar sesión:", error);
+    showAlert("Error al cerrar sesión.", "error");
   }
 });
 
@@ -81,7 +82,7 @@ estado.addEventListener("input", validarFormulario);
 validarFormulario();
 
 // 🔹 Guardar oficio en Firestore
-document.getElementById("uploadButton").addEventListener("click", async () => {
+async function uploadFile() {
   const fileInput = document.getElementById("fileInput");
   const folio = document.getElementById("folio").value;
   const asunto = document.getElementById("asunto").value;
@@ -107,30 +108,32 @@ document.getElementById("uploadButton").addEventListener("click", async () => {
   status.textContent = "Subiendo archivo...";
 
   try {
-    console.log("Enviando solicitud al backend..."); // Depuración
+    showAlert("Enviando solicitud al servidor", "success");
     const response = await fetch("https://oficios-imssb.onrender.com/upload", {
       method: "POST",
       body: formData,
     });
 
-    console.log("Respuesta recibida:", response); // Depuración
-
+   
     if (!response.ok) {
       throw new Error(`Error al subir el archivo: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    status.textContent = "Archivo subido correctamente";
-
-    if (response.ok) {
-      alert("✅ Oficio subido correctamente.");
     } else {
-      alert("❌ Error al actualizar el oficio.");
+      const data = await response.json();
     }
   } catch (error) {
     console.error(error);
-    status.textContent = "Error al subir el archivo.";
   }
+}
+
+// Asigna el evento al botón y maneja las alertas
+document.getElementById("uploadButton").addEventListener("click", async () => {
+  const result = await uploadFile();
+
+  // Muestra el mensaje en el status y en una alerta
+  const status = document.getElementById("status"); // Asegúrate de tener este elemento en tu HTML
+  status.textContent = result.message;
+
+  alert(result.message);
 });
 
 // https://www.linkedin.com/in/atakangk/
@@ -261,7 +264,8 @@ async function searchFolio() {
       showMessage("No se encontraron oficios con ese folio.");
     }
   } catch (error) {
-    showMessage("No se encontraron oficios con ese folio.");
+    showAlert("No se encontraron oficios con este folio", "warning");
+    closeModal();
   }
 }
 
@@ -402,11 +406,6 @@ async function updateOficio() {
   const remitente = inputRemitente.value;
   const estado = inputEstado.value;
 
-  if (!id) {
-    alert("Error: No se encontró el ID del oficio.");
-    return;
-  }
-
   try {
     const response = await fetch(`https://oficios-imssb.onrender.com/oficios/${id}`, {
       method: "PUT",
@@ -414,10 +413,16 @@ async function updateOficio() {
       body: JSON.stringify({ folio, asunto, destinatario, remitente, estado }),
     });
 
+    if (!id) {
+      alert("Error: No se encontró el ID del oficio.");
+      return;
+    }
+
     if (response.ok) {
-      alert("✅ Oficio actualizado correctamente.");
+      showAlert("Oficio actualizado correctamente.", "success");
       cerrarModalEditar();
       fetchOficios(); // Recargar la tabla después de editar
+      displayModal(data.oficios);
     } else {
       alert("❌ Error al actualizar el oficio.");
     }
@@ -449,7 +454,7 @@ async function filtrarPorFecha() {
   const filtroActivo = document.getElementById("filtroActivo");
 
   if (!fechaInicioInput || !fechaFinInput) {
-    console.error("Error: No se encontraron los campos de fecha.");
+    showAlert("No se encontraron los campos de fecha.", "error");
     return;
   }
 
@@ -651,6 +656,7 @@ document.getElementById("generarPDF").addEventListener("click", function () {
 
   // Descargar el PDF
   doc.save("Reporte_Oficios.pdf");
+  showAlert("PDF se exporto exitosamente", "success");
 });
 
 //SCRIPT PARA EXPORTAR EXCEL
@@ -711,7 +717,7 @@ document
         cell.alignment = { horizontal: "center", vertical: "middle" };
       });
     });
-    
+
     // Ajustar ancho de columnas
     worksheet.columns = [
       { width: 5 },
@@ -734,4 +740,45 @@ document
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    showAlert("Excel se exporto exitosamente", "success");
   });
+
+//Alerta Modificaciones
+
+function showAlert(message, type = "success") {
+  const alertBox = document.getElementById("customAlert");
+  const alertMessage = document.getElementById("alertMessage");
+  const alertIcon = document.getElementById("alertIcon");
+
+  // Configurar mensaje e icono
+  alertMessage.textContent = message;
+
+  // Limpiar clases anteriores
+  alertBox.classList.remove("success", "error", "warning");
+
+  // Asignar clase e icono según el tipo de mensaje
+  switch (type) {
+    case "success":
+      alertBox.classList.add("success");
+      alertIcon.textContent = "✅"; // Icono de éxito
+      break;
+    case "error":
+      alertBox.classList.add("error");
+      alertIcon.textContent = "❌"; // Icono de error
+      break;
+    case "warning":
+      alertBox.classList.add("warning");
+      alertIcon.textContent = "⚠️"; // Icono de advertencia
+      break;
+    default:
+      alertBox.classList.add("success");
+      alertIcon.textContent = "ℹ️"; // Icono de información por defecto
+  }
+
+  alertBox.style.display = "block";
+}
+
+function closeAlert() {
+  document.getElementById("customAlert").style.display = "none";
+}
