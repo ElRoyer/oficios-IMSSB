@@ -108,7 +108,6 @@ async function uploadFile() {
   status.textContent = "Subiendo archivo...";
 
   try {
-    showAlert("Enviando solicitud al servidor", "success");
     const response = await fetch("https://oficios-imssb.onrender.com/upload", {
       method: "POST",
       body: formData,
