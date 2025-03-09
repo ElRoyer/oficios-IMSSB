@@ -252,10 +252,8 @@ app.get("/oficios/search", async (req, res) => {
         .json({ error: "No se encontró el oficio con ese folio" });
     }
 
-    console.log("Oficios encontrados:", oficios); // Log de los oficios encontrados
     res.json({ oficios });
   } catch (error) {
-    console.error("Error en la búsqueda:", error);
     res.status(500).json({ error: "Error al buscar el oficio" });
   }
 });
