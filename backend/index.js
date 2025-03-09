@@ -9,12 +9,10 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
-// Opción alternativa si prefieres configurarlo manualmente:
 app.use((req, res, next) => {
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://oficios-imssb-1.onrender.com"
-  );
+  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' https://oficios-imssb.onrender.com/");
+  next();
+});
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next(); // Importante para continuar con la ejecución de las rutas
