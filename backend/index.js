@@ -11,8 +11,12 @@ app.use(cors({ origin: "*" }));
 
 // Opción alternativa si prefieres configurarlo manualmente:
 app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' https://framework-gb.cdn.gob.mx; script-src 'self' 'unsafe-inline' https://framework-gb.cdn.gob.mx https://code.jquery.com;"
-);
+  res.setHeader("Content-Security-Policy",
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' https://framework-gb.cdn.gob.mx https://code.jquery.com; " +
+    "style-src 'self' 'unsafe-inline' https://framework-gb.cdn.gob.mx; " +
+    "img-src 'self' https://framework-gb.cdn.gob.mx data:;"
+  );
   next();
 });
 // Configuración de Firebase con credenciales del .env
