@@ -13,14 +13,6 @@
     style-src 'self' 'unsafe-inline' https://framework-gb.cdn.gob.mx;
     img-src 'self' https://framework-gb.cdn.gob.mx data:;
   ">
-    <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    script-src 'self' https://framework-gb.cdn.gob.mx https://code.jquery.com;
-    style-src 'self' https://framework-gb.cdn.gob.mx https://oficios-imssb.onrender.com 'unsafe-inline';
-    img-src 'self' https://framework-gb.cdn.gob.mx https://oficios-imssb.onrender.com data:;
-    font-src 'self' https://framework-gb.cdn.gob.mx https://fonts.googleapis.com https://fonts.gstatic.com;
-    connect-src 'self' https://oficios-imssb.onrender.com;
-">
     <link
       href="https://framework-gb.cdn.gob.mx/favicon.ico"
       rel="shortcut icon"
@@ -68,7 +60,7 @@
       rel="shortcut icon"
     />
     <script
-      src="https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js"
+      src="http://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js"
       type="text/javascript"
       async=""
     ></script>
@@ -402,79 +394,6 @@
       <span id="alertMessage"></span> <br/>
       <button onclick="closeAlert()">OK</button>
     </div>
-
-
-    <!--Modal para mostrar registros en la tabla-->
-    <script>
-      let lastVisible = null;
-      const pageSize = 120;
-      let canLoadNext = false;
-
-      document.addEventListener("DOMContentLoaded", () => {
-        fetchOficios();
-      });
-
-      async function fetchOficios(next = true) {
-        try {
-          let url = `https://oficios-imssb.onrender.com/oficios?pageSize=${pageSize}`;
-
-          const response = await fetch(url);
-          const data = await response.json();
-
-          if (!data || !data.oficios || !Array.isArray(data.oficios)) {
-            showAlert("Error no se recibieron datos válidos.", "error");
-            return;
-          }
-          const oficios = data.oficios; // ✅ Extraer correctamente los datos
-          lastVisible = data.lastVisible; // ✅ Guardar el último documento recibido
-
-          // Verifica si hay más datos para cargar
-          canLoadNext = data.lastVisible !== null;
-
-          updateTable(oficios);
-        } catch (error) {
-          showAlert("Error al obtener los oficios.", "error");
-        }
-      }
-
-      function updateTable(oficios) {
-        const tabla = document.querySelector("#tablaCuerpo");
-        tabla.innerHTML = ""; // ✅ Limpiar antes de agregar nuevos datos
-
-        if (!oficios || oficios.length === 0) {
-          tabla.innerHTML =
-            "<tr><td colspan='7'>No hay oficios disponibles</td></tr>";
-          return;
-        }
-
-        oficios.forEach((oficio) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${oficio.folio || "N/A"}</td>
-            <td>${oficio.asunto || "N/A"}</td>
-            <td>${oficio.destinatario || "N/A"}</td>
-            <td>${oficio.remitente || "N/A"}</td>
-            <td>${oficio.estado || "N/A"}</td>
-            <td>${
-              oficio.fecha ? new Date(oficio.fecha).toLocaleString() : "N/A"
-            }</td>
-            <td>
-              <a href="${
-                oficio.enlace || "#"
-              }" target="_blank"><i class="fa-solid fa-eye"></i></a></td>
-            <td>
-              <button onclick='abrirModalEditar("${oficio.id}", "${
-            oficio.folio || ""
-          }", "${oficio.asunto || ""}", "${oficio.destinatario || ""}", "${
-            oficio.remitente || ""
-          }", "${oficio.estado || ""}")'><i class="fa-solid fa-pencil"></i>
-          </button>
-            </td>
-        `;
-          tabla.appendChild(row);
-        });
-      }
-    </script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
