@@ -116,7 +116,6 @@ async function uploadFile() {
       body: formData,
     });
 
-     fetchOficios(); // Cargar los oficios inicialmente
     if (!response.ok) {
       throw new Error("Error al subir el archivo");
     } else {
@@ -126,6 +125,8 @@ async function uploadFile() {
     console.error(error);
     return { success: false, message: "❌ Error al actualizar el oficio." };
   }
+  
+     fetchOficios(); // Cargar los oficios inicialmente
 }
 
 // Asigna el evento al botón y maneja las alertas
