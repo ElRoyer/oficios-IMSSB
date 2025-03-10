@@ -10,13 +10,14 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 
 // Opción alternativa si prefieres configurarlo manualmente:
-// Opción alternativa si prefieres configurarlo manualmente:
 app.use((req, res, next) => {
   res.setHeader("Content-Security-Policy",
-    "default-src 'self'; " +  // Permite solo recursos del mismo origen
-    "script-src 'self' 'unsafe-eval';"  // Permite 'unsafe-eval' para ejecutar 'eval()' y funciones similares
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline' data:; " +
+    "style-src 'self' 'unsafe-inline'; " +
+    "img-src 'self' data:;"
   );
-  next();  // Pasar al siguiente middleware
+  next();
 });
 // Configuración de Firebase con credenciales del .env
 try {
