@@ -13,7 +13,7 @@ app.use(cors({ origin: "*" }));
 app.use((req, res, next) => {
   res.setHeader("Content-Security-Policy",
     "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' https://framework-gb.cdn.gob.mx https://code.jquery.com; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://framework-gb.cdn.gob.mx https://code.jquery.com; " +
     "style-src 'self' 'unsafe-inline' https://framework-gb.cdn.gob.mx; " +
     "img-src 'self' https://framework-gb.cdn.gob.mx data:;"
   );
