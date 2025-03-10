@@ -7,14 +7,13 @@
       Centro Nacional para la Prevención y Control del VIH y el sida
     </title>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link
       href="https://framework-gb.cdn.gob.mx/favicon.ico"
       rel="shortcut icon"
     />
     <link
-      href="main.css"
+      href="https://framework-gb.cdn.gob.mx/assets/styles/main.css"
       rel="stylesheet"
     />
     <link href="https://www.gob.mx/cms/application.css" rel="stylesheet" />
@@ -23,17 +22,7 @@
       type="text/javascript"
     ></script>
     <!--Script para verificar sí el usuario esta autenticado-->
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const authUser = localStorage.getItem("authUser");
-        if (!authUser) {
-          alert(
-            "No estás autenticado. Redirigiendo a la página de inicio de sesión..."
-          );
-          window.location.href = "index.html"; // Redirige a la página de login
-        }
-      });
-    </script>
+
     <!--Link para poder utilizar font awesome-->
     <link
       rel="stylesheet"
@@ -56,7 +45,7 @@
       rel="shortcut icon"
     />
     <script
-      src="https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js"
+      src="http://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js"
       type="text/javascript"
       async=""
     ></script>
@@ -75,6 +64,11 @@
       type="text/javascript"
       src="https://framework-gb.cdn.gob.mx/assets/scripts/vendor/analitycs.js"
     ></script>
+    <link
+      rel="stylesheet"
+      href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300,600,700&amp;subset=latin"
+      media="all"
+    />
     <link
       href="https://fonts.googleapis.com/css?family=Open+Sans&amp;display=swap"
       rel="stylesheet"
@@ -95,6 +89,15 @@
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-SQH6J87DQ2"
     ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-SQH6J87DQ2");
+    </script>
   </head>
 
   <body>
@@ -112,7 +115,7 @@
     <!-- BANNER -->
     <div
       class="flag-banner hidden-xs"
-      style="margin-top: 80px"
+      style="background-image: url(img/avatar.jpg); margin-top: 80px"
     ></div>
     <!-- FIN BANNER -->
 
@@ -140,9 +143,9 @@
       </nav>
     </div>
     <!--- FIN MENÚ --->
-
+    <section class="section blog section-info">
     <div class="container">
-      <h2>Oficios CUSeN</h2>
+      <h2>Oficios Causen</h2>
       <hr class="red" />
       <br />
       <br />
@@ -235,7 +238,7 @@
               <h2 class="fs-title">Seleccionar archivo</h2>
               <br />
               <input type="file" id="fileInput" accept=".jpg, .jpeg, .png, .pdf"/><br /><br />
-              <span id="fileError" style="color: red;"></span>
+
               <input
                 type="button"
                 name="next"
@@ -346,6 +349,7 @@
         </table>
       </div>
     </div>
+  </section>
 
     <!-- Modal para editar -->
     <div class="modal-overlay" id="modalOverlay"></div>
@@ -381,6 +385,85 @@
       <span id="alertMessage"></span> <br/>
       <button onclick="closeAlert()">OK</button>
     </div>
+
+
+    <!--Modal para mostrar registros en la tabla-->
+    <script>
+      let lastVisible = null;
+      const pageSize = 120;
+      let canLoadNext = false;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchOficios();
+      });
+
+      async function fetchOficios(next = true) {
+        try {
+          let url = `https://oficios-imssb.onrender.com/oficios?pageSize=${pageSize}`;
+
+          const response = await fetch(url);
+          const data = await response.json();
+
+          if (!data || !data.oficios || !Array.isArray(data.oficios)) {
+            showAlert("Error no se recibieron datos válidos.", "error");
+            return;
+          }
+          const oficios = data.oficios; // ✅ Extraer correctamente los datos
+          lastVisible = data.lastVisible; // ✅ Guardar el último documento recibido
+
+          // Verifica si hay más datos para cargar
+          canLoadNext = data.lastVisible !== null;
+
+          updateTable(oficios);
+        } catch (error) {
+          showAlert("Error al obtener los oficios.", "error");
+        }
+      }
+
+      function updateTable(oficios) {
+        const tabla = document.querySelector("#tablaCuerpo");
+        tabla.innerHTML = ""; // ✅ Limpiar antes de agregar nuevos datos
+
+        if (!oficios || oficios.length === 0) {
+          tabla.innerHTML =
+            "<tr><td colspan='7'>No hay oficios disponibles</td></tr>";
+          return;
+        }
+
+        oficios.forEach((oficio) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${oficio.folio || "N/A"}</td>
+            <td>${oficio.asunto || "N/A"}</td>
+            <td>${oficio.destinatario || "N/A"}</td>
+            <td>${oficio.remitente || "N/A"}</td>
+            <td>${oficio.estado || "N/A"}</td>
+            <td>${
+              oficio.fecha ? new Date(oficio.fecha).toLocaleString() : "N/A"
+            }</td>
+            <td>
+              <a href="${
+                oficio.enlace || "#"
+              }" target="_blank"><i class="fa-solid fa-eye"></i></a></td>
+            <td>
+              <button onclick='abrirModalEditar("${oficio.id}", "${
+            oficio.folio || ""
+          }", "${oficio.asunto || ""}", "${oficio.destinatario || ""}", "${
+            oficio.remitente || ""
+          }", "${oficio.estado || ""}")'><i class="fa-solid fa-pencil"></i>
+          </button>
+            </td>
+        `;
+          tabla.appendChild(row);
+        });
+      }
+      document
+        .getElementById("btnNext")
+        .addEventListener("click", () => fetchOficios(true));
+      document
+        .getElementById("btnPrev")
+        .addEventListener("click", () => fetchOficios(false));
+    </script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
