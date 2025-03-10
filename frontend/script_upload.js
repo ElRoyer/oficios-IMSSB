@@ -125,7 +125,7 @@ async function uploadFile() {
 
    
     if (!response.ok) {
-      throw new Error(`Error al subir el archivo: ${response.statusText}`);
+      throw new Error("Error al subir el archivo");
     } else {
       const data = await response.json();
     }
