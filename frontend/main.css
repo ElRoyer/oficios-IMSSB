@@ -7792,14 +7792,6 @@ hr.red:before {
     display: block
 }
 
-@font-face {
-    font-family: icogobmx;
-    src: url(fonts/icogobmx.eot?xc1rry);
-    src: url(fonts/icogobmx.eot?#iefixxc1rry) format("embedded-opentype"), url(fonts/icogobmx.woff?xc1rry) format("woff"), url(fonts/icogobmx.ttf?xc1rry) format("truetype"), url(fonts/icogobmx.svg?xc1rry#icogobmx) format("svg");
-    font-weight: 400;
-    font-style: normal
-}
-
 [class*=" icon-"],
 [class^=icon-] {
     font-family: icogobmx;
