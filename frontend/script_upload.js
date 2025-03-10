@@ -4,9 +4,9 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
     localStorage.removeItem("authUser");
     showAlert("Sesión cerrada correctamente.", "success");
     // Redirigir después de 3 segundos
-    setTimeout(() => {
+    //setTimeout(() => {
       window.location.href = "index.html"; // Redirigir al index
-    }, 2000);
+    //}, 2000);
   } catch (error) {
     console.error("Error al cerrar sesión:", error);
     showAlert("Error al cerrar sesión.", "error");
@@ -288,9 +288,9 @@ function showMessage(message) {
   document.body.appendChild(messageElement);
 
   // Elimina el mensaje después de 5 segundos
-  setTimeout(() => {
+  //setTimeout(() => {
     messageElement.remove();
-  }, 2000);
+  //}, 2000);
 }
 
 // Mostrar el modal con los resultados
