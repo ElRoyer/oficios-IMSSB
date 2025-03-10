@@ -4,14 +4,95 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
     localStorage.removeItem("authUser");
     showAlert("Sesión cerrada correctamente.", "success");
     // Redirigir después de 3 segundos
-    setTimeout(() => {
-      window.location.href = "index.html"; // Redirigir al index
-    }, 2000);
+    setTimeout(() =>
+      window.location.href = "index.html" // Redirigir al index
+    ,1000);
+    // ✅ Usa una función en su lugar
+
   } catch (error) {
     console.error("Error al cerrar sesión:", error);
     showAlert("Error al cerrar sesión.", "error");
   }
 });
+
+
+//Modal para mostrar registros en la tabla
+
+  let lastVisible = null;
+  const pageSize = 120;
+  let canLoadNext = false;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchOficios();
+  });
+
+  async function fetchOficios(next = true) {
+    try {
+      let url = `https://oficios-imssb.onrender.com/oficios?pageSize=${pageSize}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!data || !data.oficios || !Array.isArray(data.oficios)) {
+        showAlert("Error no se recibieron datos válidos.", "error");
+        return;
+      }
+      const oficios = data.oficios; // ✅ Extraer correctamente los datos
+      lastVisible = data.lastVisible; // ✅ Guardar el último documento recibido
+
+      // Verifica si hay más datos para cargar
+      canLoadNext = data.lastVisible !== null;
+
+      updateTable(oficios);
+    } catch (error) {
+      showAlert("Error al obtener los oficios.", "error");
+    }
+  }
+
+  function updateTable(oficios) {
+    const tabla = document.querySelector("#tablaCuerpo");
+    tabla.innerHTML = ""; // ✅ Limpiar antes de agregar nuevos datos
+
+    if (!oficios || oficios.length === 0) {
+      tabla.innerHTML =
+        "<tr><td colspan='7'>No hay oficios disponibles</td></tr>";
+      return;
+    }
+
+    oficios.forEach((oficio) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${oficio.folio || "N/A"}</td>
+        <td>${oficio.asunto || "N/A"}</td>
+        <td>${oficio.destinatario || "N/A"}</td>
+        <td>${oficio.remitente || "N/A"}</td>
+        <td>${oficio.estado || "N/A"}</td>
+        <td>${
+          oficio.fecha ? new Date(oficio.fecha).toLocaleString() : "N/A"
+        }</td>
+        <td>
+          <a href="${
+            oficio.enlace || "#"
+          }" target="_blank"><i class="fa-solid fa-eye"></i></a></td>
+        <td>
+          <button onclick='abrirModalEditar("${oficio.id}", "${
+        oficio.folio || ""
+      }", "${oficio.asunto || ""}", "${oficio.destinatario || ""}", "${
+        oficio.remitente || ""
+      }", "${oficio.estado || ""}")'><i class="fa-solid fa-pencil"></i>
+      </button>
+        </td>
+    `;
+      tabla.appendChild(row);
+    });
+  }
+  document
+    .getElementById("btnNext")
+    .addEventListener("click", () => fetchOficios(true));
+  document
+    .getElementById("btnPrev")
+    .addEventListener("click", () => fetchOficios(false));
+
 
 // Selección de elementos
 const uploadButton = document.getElementById("uploadButton");
@@ -108,6 +189,7 @@ async function uploadFile() {
   status.textContent = "Subiendo archivo...";
 
   try {
+    showAlert("Enviando solicitud al servidor", "success");
     const response = await fetch("https://oficios-imssb.onrender.com/upload", {
       method: "POST",
       body: formData,
@@ -276,10 +358,8 @@ function showMessage(message) {
 
   document.body.appendChild(messageElement);
 
-  // Elimina el mensaje después de 5 segundos
-  setTimeout(() => {
-    messageElement.remove();
-  }, 2000);
+  // ✅ Usa una función en su lugar
+setTimeout(() =>  messageElement.remove(), 1000);
 }
 
 // Mostrar el modal con los resultados
