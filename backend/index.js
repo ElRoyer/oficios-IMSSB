@@ -9,15 +9,15 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
+
 // Opción alternativa si prefieres configurarlo manualmente:
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      scriptSrc: ["'self'", "'unsafe-eval'"], // Permite 'unsafe-eval'
-    },
-  })
-);
-// Configuración de Firebase con credenciales del .env
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy",
+ "self", "unsafe-eval"
+  );
+  next();
+});
+ración de Firebase con credenciales del .env
 try {
   admin.initializeApp({
     credential: admin.credential.cert({
