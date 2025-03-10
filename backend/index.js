@@ -17,7 +17,8 @@ app.use((req, res, next) => {
   );
   next();
 });
-ración de Firebase con credenciales del .env
+
+// Configuración de Firebase con credenciales del .env
 try {
   admin.initializeApp({
     credential: admin.credential.cert({
