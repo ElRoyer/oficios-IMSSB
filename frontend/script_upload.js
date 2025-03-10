@@ -92,7 +92,7 @@ estado.addEventListener("input", validarFormulario);
 validarFormulario();
 
 // 🔹 Guardar oficio en Firestore
-async function uploadFile() {
+document.getElementById("uploadButton").addEventListener("click", async () => {
   const fileInput = document.getElementById("fileInput");
   const folio = document.getElementById("folio").value;
   const asunto = document.getElementById("asunto").value;
@@ -125,19 +125,6 @@ async function uploadFile() {
     console.error(error);
     return { success: false, message: "❌ Error al actualizar el oficio." };
   }
-  
-     fetchOficios(); // Cargar los oficios inicialmente
-}
-
-// Asigna el evento al botón y maneja las alertas
-document.getElementById("uploadButton").addEventListener("click", async () => {
-  const result = await uploadFile();
-
-  // Muestra el mensaje en el status y en una alerta
-  const status = document.getElementById("status"); // Asegúrate de tener este elemento en tu HTML
-  status.textContent = result.message;
-
-  alert(result.message);
 });
 
 // https://www.linkedin.com/in/atakangk/
