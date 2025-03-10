@@ -116,7 +116,7 @@ async function uploadFile() {
       body: formData,
     });
 
-   
+     fetchOficios(); // Cargar los oficios inicialmente
     if (!response.ok) {
       throw new Error("Error al subir el archivo");
     } else {
