@@ -100,11 +100,6 @@ async function uploadFile() {
   const remitente = document.getElementById("remitente").value;
   const estado = document.getElementById("estado").value;
 
-  if (fileInput.files.length === 0) {
-    status.textContent = "Por favor, selecciona un archivo.";
-    return;
-  }
-
   window.location.hash = "#close"; // Cierra el modal cambiando el hash
   const file = fileInput.files[0];
   const formData = new FormData();
@@ -114,8 +109,6 @@ async function uploadFile() {
   formData.append("destinatario", destinatario); // Destinatario
   formData.append("remitente", remitente); // Remitente
   formData.append("estado", estado); // Estado
-
-  status.textContent = "Subiendo archivo...";
 
   try {
     const response = await fetch("https://oficios-imssb.onrender.com/upload", {
