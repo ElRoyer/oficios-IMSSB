@@ -12,8 +12,10 @@ app.use(cors({ origin: "*" }));
 // Opción alternativa si prefieres configurarlo manualmente:
 // Opción alternativa si prefieres configurarlo manualmente:
 app.use((req, res, next) => {
-  // Eliminar la política CSP
-  // res.setHeader("Content-Security-Policy", ...);  // Aquí ya no se establece la CSP
+  res.setHeader("Content-Security-Policy",
+    "default-src 'self'; " +  // Permite solo recursos del mismo origen
+    "script-src 'self' 'unsafe-eval';"  // Permite 'unsafe-eval' para ejecutar 'eval()' y funciones similares
+  );
   next();  // Pasar al siguiente middleware
 });
 // Configuración de Firebase con credenciales del .env
