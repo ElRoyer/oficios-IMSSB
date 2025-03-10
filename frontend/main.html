@@ -7,7 +7,12 @@
       Centro Nacional para la Prevención y Control del VIH y el sida
     </title>
 
-    <meta content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' https://framework-gb.cdn.gob.mx https://code.jquery.com 'unsafe-inline';
+    style-src 'self' 'unsafe-inline' https://framework-gb.cdn.gob.mx;
+    img-src 'self' https://framework-gb.cdn.gob.mx data:;
+  ">
     <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' https://framework-gb.cdn.gob.mx https://code.jquery.com;
