@@ -125,6 +125,8 @@ document.getElementById("uploadButton").addEventListener("click", async () => {
     console.error(error);
     return { success: false, message: "❌ Error al actualizar el oficio." };
   }
+  // Recargar la página para mostrar todos los registros
+  window.location.reload();
 });
 
 // https://www.linkedin.com/in/atakangk/
